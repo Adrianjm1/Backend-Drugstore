@@ -20,16 +20,6 @@ Seller.init({
   identification: {
     type: DataTypes.STRING(15),
     allowNull: false
-  },
-  bank: {
-    type: DataTypes.STRING(30),
-    defaultValue: '',
-    allowNull: false
-  },
-  paymentUSD: {
-    type: DataTypes.BOOLEAN,
-    defaultValue: true,
-    allowNull: false
   }
 
 }, {sequelize: db, modelName: 'seller'});

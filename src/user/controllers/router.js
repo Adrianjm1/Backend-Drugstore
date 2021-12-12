@@ -1,12 +1,9 @@
 const Router = require('express').Router();
 const Controller = require('./index.js');
-
-// Rutas...
+const {validToken} = require('./middleware');
 
 Router.post('/login', Controller.login);
-Router.get('/', Controller.getAll);
-Router.get('/:id', Controller.getOne); 
-
+Router.post('/signup', validToken, Controller.signup);
 
 
 module.exports = Router

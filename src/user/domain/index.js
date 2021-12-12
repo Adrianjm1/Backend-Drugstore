@@ -8,9 +8,13 @@ function all(attr) {
   return User.findAll(attr)
 }
 
+function create(attr) {
+  return User.create(attr)
+}
+
 
 module.exports = {
   single,
   all,
-
+  create
 }

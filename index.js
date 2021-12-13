@@ -13,4 +13,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // Router
 app.use('/api', require('./src/router'));
 
-app.listen(process.env.PORT || 5000, db)
+app.listen(process.env.PORT || 5000, db);
+
+

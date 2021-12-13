@@ -1,15 +1,21 @@
-// const Joi = require('joi');
+const Joi = require('joi');
 
 
-// module.exports.Pay = Joi.object({
-//   bank: Joi.string().min(0).max(30).trim().required(),
-//   amountUSD: Joi.string().max(30).trim().required(),
-//   referenceNumber: Joi.string().min(1).max(30).trim().required(),
-//   code: Joi.string().min(1).max(30).trim().required(),
-//   exchangeRate: Joi.string().max(30).trim().required(),
-//   paymentUSD: Joi.boolean().required(),
-//   date: Joi.string().max(30).trim().required(),
-//   description: Joi.string().max(80),
-//   nota: Joi.number(),
-// });
+module.exports.Bil = Joi.object({
+    billDate: Joi.string(),
+    dispatchDate:Joi.string(),
+    expirationDate:Joi.string(),
+    creditDays:   Joi.number(),
+    daysLate:   Joi.number(),
+    billNumber:   Joi.number(),
+    client: Joi.string().min(0).max(30).trim().required(),
+    rif:Joi.string().min(0).max(30).trim().required(),
+    nota: Joi.number(),
+    location: Joi.string().min(0).max(30).trim().required(),
+    city: Joi.string().min(0).max(30).trim().required(),
+    sellersCommission: Joi.number(),
+    amountUSD: Joi.number(),
+    idSeller:  Joi.number(),
+
+});
 

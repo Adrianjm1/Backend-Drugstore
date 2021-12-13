@@ -1,4 +1,5 @@
 const Bill = require('../domain');
+const { Bil } = require('../validations');
 // const { Fac } = require('../validations');
 
 async function getAll(req, res){
@@ -63,9 +64,22 @@ async function make(req, res) {
 
 async function createBill(req, res) {
   try {
-    const body = req.body;
+    const body = await Bil.validateAsync(req.body) ;
+    console.log(body);
     const data = await Bill.create(body);
     res.send(data)
+  } catch (e) {
+    res.status(400).send({error: e.message})
+  }
+}
+
+
+async function deleteBill(req, res) {
+  try {
+    const id = req.params.id
+    console.log(id);
+     const data = await Bill.deleteB({ where: { id } });
+    res.send(`${data}  Factura borrada con exito`)
   } catch (e) {
     res.status(400).send({error: e.message})
   }
@@ -74,9 +88,12 @@ async function createBill(req, res) {
 
 
 
+
+
 module.exports = {
   getAll,
   getOne,
   make,
-  createBill
+  createBill,
+  deleteBill
 }

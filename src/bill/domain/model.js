@@ -10,11 +10,11 @@ Bill.init({
     allowNull: false
   },
   billDate: {
-    type: DataTypes.STRING(20),
+    type: DataTypes.DATE,
     allowNull: false
   },
   dispatchDate: {
-    type: DataTypes.STRING(20),
+    type: DataTypes.DATE,
     allowNull: false
   },
   creditDays: {
@@ -22,15 +22,11 @@ Bill.init({
     allowNull: false
   },
   expirationDate: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.DATE,
     allowNull: false
   },
   daysLate: {
     type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  currentDate: {
-    type: DataTypes.STRING(20),
     allowNull: false
   },
   billNumber: {
@@ -43,10 +39,6 @@ Bill.init({
   },
   rif: {
     type: DataTypes.STRING(30),
-    allowNull: false
-  },
-  amountBS: {
-    type: DataTypes.DECIMAL(8,2),
     allowNull: false
   },
   amountUSD: {

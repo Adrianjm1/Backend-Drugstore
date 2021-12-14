@@ -1,4 +1,5 @@
 const Amounts = require('../domain');
+const BillF = require('../../bill/domain');
 
 async function getAll(req, res){
   try {
@@ -23,6 +24,7 @@ async function getOne(req, res){
   }
 }
 
+
 async function make(req, res){
   try {
     const body = req.body;
@@ -34,9 +36,50 @@ async function make(req, res){
 }
 
 
+async function updateToDate(req, res){
+  try {
+    const data = await Amounts.all();
+    res.send(data)
+  } catch (e) {
+    res.status(400).send({error: e.message})
+  }
+}
+
+
+
+async function updateToDate(req, res){
+  try {
+
+     const dataBIll = await BillF.all();
+
+    res.send(dataBIll)
+
+    // var hoy = new Date();
+    // var devolucion = new Date();
+    // devolucion.setDate(hoy.getDate() + 3);
+
+    // console.log("Fecha actual: ", hoy.toLocaleDateString());
+    // console.log("Fecha devolucion: ", devolucion.toLocaleDateString());
+
+    dataBIll.map(data =>{
+      if (data.id){
+        let fecha = `${data.createdAt.getDate()}/${data.createdAt.getMonth()+1}/${data.createdAt.getYear()}`
+        let hola = data.billDate;
+        console.log(`${fecha} `);
+      }
+    })
+
+
+  } catch (e) {
+    res.status(400).send({error: e.message})
+  }
+}
+
+
 
 module.exports = {
   getAll,
   getOne,
-  make
+  make,
+  updateToDate
 }

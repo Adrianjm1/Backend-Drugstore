@@ -1,5 +1,6 @@
 const Bill = require('../domain');
 const { Bil } = require('../validations');
+const AmountF = require('../../amounts/domain')
 // const { Fac } = require('../validations');
 
 async function getAll(req, res){
@@ -65,8 +66,21 @@ async function make(req, res) {
 async function createBill(req, res) {
   try {
     const body = await Bil.validateAsync(req.body) ;
-    console.log(body);
     const data = await Bill.create(body);
+
+    const amount = {
+      unPaid: body.amountUSD,
+      idSeller: body.idSeller,
+      idBill : body.billNumber
+    }
+
+
+
+    
+    const dataAmount = await AmountF.create(amount);
+
+
+
     res.send(data)
   } catch (e) {
     res.status(400).send({error: e.message})

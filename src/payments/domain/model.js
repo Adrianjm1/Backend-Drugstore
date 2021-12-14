@@ -23,7 +23,7 @@ Payment.init({
     allowNull: true
   },
   date: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.STRING(15),
     allowNull: false
   },
   bank: {

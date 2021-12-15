@@ -66,6 +66,12 @@ async function make(req, res) {
 async function createBill(req, res) {
   try {
     const body = await Bil.validateAsync(req.body) ;
+
+    let fecha = new Date(`${body.billDate.slice(0,4)}`  ) ;
+    console.log(fecha);
+    fecha.setDate(fecha.getDate() + body.creditDays);
+    body.expirationDate = fecha;
+
     const data = await Bill.create(body);
 
     const amount = {

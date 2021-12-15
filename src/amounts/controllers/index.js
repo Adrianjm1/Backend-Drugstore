@@ -51,21 +51,30 @@ async function updateToDate(req, res){
   try {
 
      const dataBIll = await BillF.all();
+    let today = new Date();
+    // res.send(dataBIll)
 
-    res.send(dataBIll)
-
-    // var hoy = new Date();
-    // var devolucion = new Date();
-    // devolucion.setDate(hoy.getDate() + 3);
-
-    // console.log("Fecha actual: ", hoy.toLocaleDateString());
-    // console.log("Fecha devolucion: ", devolucion.toLocaleDateString());
 
     dataBIll.map(data =>{
       if (data.id){
-        let fecha = `${data.createdAt.getDate()}/${data.createdAt.getMonth()+1}/${data.createdAt.getYear()}`
-        let hola = data.billDate;
-        console.log(`${fecha} `);
+        //  let fechaF = `${data.createdAt.getDate()}/${data.createdAt.getMonth()+1}/${data.createdAt.getFullYear()}`;
+         let fecha = data.billDate ;
+         console.log(fecha);
+         fecha.setDate(fecha.getDate() + data.creditDays);
+
+         if (fecha.toLocaleDateString() > today.toLocaleDateString()){
+           console.log(`factura ${data.id} fuera de fecha se compararon ${fecha.toLocaleDateString()} y ${today.toLocaleDateString()}`);
+         } else{
+          console.log(`factura ${data.id} en fecha se compararon ${fecha.toLocaleDateString()} y ${today.toLocaleDateString()}`);
+         }
+
+      
+
+
+
+
+
+        // res.send( fecha.toLocaleDateString())
       }
     })
 

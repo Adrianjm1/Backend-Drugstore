@@ -23,7 +23,7 @@ Bill.init({
   },
   expirationDate: {
     type: DataTypes.DATE,
-    allowNull: false
+    allowNull: true
   },
   daysLate: {
     type: DataTypes.INTEGER,

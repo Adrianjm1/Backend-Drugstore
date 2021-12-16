@@ -67,17 +67,19 @@ async function createBill(req, res) {
   try {
     const body = await Bil.validateAsync(req.body) ;
 
-    let fecha = new Date(`${body.billDate.slice(0,4)}`  ) ;
-    console.log(fecha);
+
+    let fecha =  new Date(`${body.billDate}`) ;
+
     fecha.setDate(fecha.getDate() + body.creditDays);
     body.expirationDate = fecha;
+    // console.log( body.billDate+ ' es la normal y '+ body.expirationDate + ' con lso dias sumados');
 
     const data = await Bill.create(body);
 
     const amount = {
       unPaid: body.amountUSD,
       idSeller: body.idSeller,
-      idBill : body.billNumber
+      idBill : body.id
     }
 
 

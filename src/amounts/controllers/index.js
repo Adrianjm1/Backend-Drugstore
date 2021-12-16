@@ -58,17 +58,17 @@ async function updateToDate(req, res){
     dataBIll.map(data =>{
       if (data.id){
         //  let fechaF = `${data.createdAt.getDate()}/${data.createdAt.getMonth()+1}/${data.createdAt.getFullYear()}`;
-         let fecha = data.billDate ;
-         console.log(fecha);
-         fecha.setDate(fecha.getDate() + data.creditDays);
+        // let fecha =  new Date(`${body.billDate}`) ;
+        //  console.log(fecha);
+        //  fecha.setDate(fecha.getDate() + data.creditDays);
 
-         if (fecha.toLocaleDateString() > today.toLocaleDateString()){
-           console.log(`factura ${data.id} fuera de fecha se compararon ${fecha.toLocaleDateString()} y ${today.toLocaleDateString()}`);
+         if (today.toLocaleDateString() > data.expirationDate.toLocaleDateString()){
+           console.log(`factura ${data.id} fuera de fecha se compararon ${today.toLocaleDateString()} y ${data.expirationDate.toLocaleDateString()}`);
          } else{
-          console.log(`factura ${data.id} en fecha se compararon ${fecha.toLocaleDateString()} y ${today.toLocaleDateString()}`);
+          console.log(`factura ${data.id} en fecha se compararon ${today.toLocaleDateString()} y ${data.expirationDate.toLocaleDateString()}`);
          }
 
-      
+
 
 
 
@@ -79,6 +79,7 @@ async function updateToDate(req, res){
     })
 
 
+    res.send({message:"dios"})
   } catch (e) {
     res.status(400).send({error: e.message})
   }

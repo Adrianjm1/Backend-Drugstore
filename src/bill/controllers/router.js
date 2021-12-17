@@ -1,14 +1,14 @@
 const Router = require('express').Router();
 const Controller = require('./index.js');
-
+const {validToken} = require('../../user/controllers/middleware');
 // Rutas...
 
 
-Router.get('/', Controller.getAll);
-Router.get('/:id', Controller.getOne); 
-Router.get('/make', Controller.make);
-Router.post('/create', Controller.createBill);
-Router.delete('/delete/:id', Controller.deleteBill);
+Router.get('/', validToken, Controller.getAll);
+Router.get('/:id', validToken, Controller.getOne); 
+Router.get('/make', validToken, Controller.make);
+Router.post('/create', validToken, Controller.createBill);
+Router.delete('/delete/:id', validToken, Controller.deleteBill);
 
 
 module.exports = Router

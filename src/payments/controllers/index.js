@@ -1,5 +1,7 @@
 const Payment = require('../domain');
 const Bill = require('../../bill/domain/model');
+const BillFunctions = require('../../bill/domain/index');
+const AmountsFunctions = require('../../amounts/domain/index');
 
 async function getAll(req, res){
   try {
@@ -149,13 +151,109 @@ async function getOne(req, res){
   }
 }
 
-async function make(req, res){
+async function create(req, res){
   try {
     const body = req.body;
-    const data = await Payment.create(body);
-    res.send(data)
-  } catch (e) {
-    res.status(400).send({error: e.message})
+
+    BillFunctions.single({
+      attributes: ['id', 'amountUSD', 'idSeller'],
+      where: {id: body.id}
+    })
+      .then(data => {
+
+        if(!data){
+          return res.send({
+            ok: false,
+            message: 'No existe la factura, verifique el numero e intente nuevamente'
+          });
+
+        } else{ 
+
+          body.id = null;
+
+          if((parseFloat(body.amountUSD) > parseFloat(data.amountUSD)) || (body.amountUSD <= 0)){
+
+            return res.send({
+              ok: false,
+              message: 'El monto a pagar es invalido'
+            });
+
+          } else if (parseFloat(body.amountUSD) < parseFloat(data.amountUSD)){
+
+            AmountsFunctions.all({
+              attributes: ['id','paid','unPaid','notPayed'],
+              where: {idBill: data.id}
+            })
+              .then(data2 => {
+
+                let pagado = parseFloat(data2[0].paid) + parseFloat(body.amountUSD);
+                let noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                let nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+                body.idBill = data.id;
+    
+                Promise.all([
+                  BillFunctions.up({amountUSD: nuevoSaldo}, {where: {id: data.id}}),
+                  AmountsFunctions.up({paid: pagado, unPaid: noPagado}, {where: {idBill: data.id}}),
+                  Payment.create(body)
+                ])
+                  .then(resp => {
+                    res.send(resp);
+    
+                  })
+                  .catch(e => {
+                    res.status(400).send({error4: e.message});
+    
+                  })
+
+              })
+              .catch(err => {
+                res.status(400).send({error3: err.message});
+
+              })
+
+          } else if (parseFloat(body.amountUSD) == parseFloat(data.amountUSD)){
+
+            AmountsFunctions.all({
+              attributes: ['id','paid','unPaid','notPayed'],
+              where: {idBill: data.id}
+
+            })
+              .then(data2 => {
+
+                let pagado = parseFloat(data2[0].paid) + parseFloat(body.amountUSD);
+                let nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+                let noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                body.idBill = data.id;
+    
+                Promise.all([
+                  BillFunctions.up({payed: true, amountUSD: nuevoSaldo}, {where: {id: data.id}}),
+                  AmountsFunctions.up({paid: pagado, unPaid: noPagado}, {where: {idBill: data.id}}),
+                  Payment.create(body)
+                ])
+                  .then(resp => {
+                    res.send(resp);
+    
+                  })
+                  .catch(e => {
+                    res.status(400).send({error4: e.message});
+    
+                  })
+
+              })
+              .catch(err => {
+                res.status(400).send({error3: err.message});
+
+              })
+
+            }
+        }
+
+      }).catch(e => {
+        res.status(400).send({error2: e.message});
+      });
+
+    } catch (e) {
+    res.status(400).send({error1: e.message})
   }
 }
 
@@ -164,7 +262,7 @@ async function make(req, res){
 module.exports = {
   getAll,
   getOne,
-  make,
+  create,
   getPaymentsByDay,
   getPaymentsByMonth
 }

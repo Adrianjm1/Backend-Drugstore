@@ -1,3 +1,4 @@
+const { where } = require('sequelize/dist');
 const Amounts = require('./model');
 
 
@@ -9,6 +10,10 @@ function all(attr) {
   return Amounts.findAll(attr)
 }
 
+function up(attr,where) {
+  return Amounts.update(attr,where)
+}
+
 function create(attr){
   return Amounts.create(attr)
 }
@@ -17,5 +22,6 @@ function create(attr){
 module.exports = {
   single,
   all,
-  create
+  create,
+  up
 }

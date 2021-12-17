@@ -65,31 +65,40 @@ async function make(req, res) {
 
 async function createBill(req, res) {
   try {
-    const body = await Bil.validateAsync(req.body) ;
+    const body = await Bil.validateAsync(req.body);
 
 
     let fecha =  new Date(`${body.billDate}`) ;
 
     fecha.setDate(fecha.getDate() + body.creditDays);
     body.expirationDate = fecha;
-    // console.log( body.billDate+ ' es la normal y '+ body.expirationDate + ' con lso dias sumados');
 
-    const data = await Bill.create(body);
+    Bill.create(body)
+      .then(data => {
 
-    const amount = {
-      unPaid: body.amountUSD,
-      idSeller: body.idSeller,
-      idBill : body.id
-    }
+        const amount = {
+          unPaid: body.amountUSD,
+          idSeller: body.idSeller,
+          idBill : data.id,
+        }  
+        
+        AmountF.create(amount)
+          .then(amounts => {
 
+            res.send({
+              ok: true,
+              bill: data,
+              amounts
+            });
 
+          }).catch(e => {
+            res.status(400).send({eamounts: e.message});
+          });
 
-    
-    const dataAmount = await AmountF.create(amount);
+      }).catch(e => {
+        res.status(400).send({ebill: e.message});
+      });
 
-
-
-    res.send(data)
   } catch (e) {
     res.status(400).send({error: e.message})
   }

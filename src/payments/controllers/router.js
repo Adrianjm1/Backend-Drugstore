@@ -5,8 +5,7 @@ const Controller = require('./index.js');
 Router.get('/', Controller.getAll);
 Router.get('/day', validToken, Controller.getPaymentsByDay);
 Router.get('/month', validToken, Controller.getPaymentsByMonth);
-Router.get('/:id', Controller.getOne); 
-Router.get('/make', Controller.make);
+Router.post('/create', Controller.create);
 
 module.exports = Router
 

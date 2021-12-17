@@ -58,7 +58,11 @@ Bill.init({
     defaultValue: 0,
     allowNull: false
   },
-  
+  payed: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+    allowNull: false
+  }  
 }, {sequelize: db, modelName: 'bill'});
 
 module.exports = Bill;

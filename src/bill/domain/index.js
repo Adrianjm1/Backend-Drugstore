@@ -10,6 +10,10 @@ function all(attr) {
   return Bill.findAll(attr)
 }
 
+function up(attr,where) {
+  return Bill.update(attr,where)
+}
+
 function create(attr){
   return Bill.create(attr)
 }
@@ -23,5 +27,6 @@ module.exports = {
   single,
   all,
   create,
-  deleteB
+  deleteB,
+  up
 }

@@ -2,7 +2,8 @@ const Joi = require('joi');
 
 
 module.exports.Bil = Joi.object({
-    billDate: Joi.string(),
+    id: Joi.number(),
+    billDate: Joi.required(),
     dispatchDate:Joi.string(),
     expirationDate:Joi.string(),
     creditDays:   Joi.number(),

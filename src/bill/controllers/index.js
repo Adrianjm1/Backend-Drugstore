@@ -1,5 +1,6 @@
 const Bill = require('../domain');
 const { Bil } = require('../validations');
+const AmountF = require('../../amounts/domain')
 // const { Fac } = require('../validations');
 
 async function getAll(req, res){
@@ -65,8 +66,29 @@ async function make(req, res) {
 async function createBill(req, res) {
   try {
     const body = await Bil.validateAsync(req.body) ;
-    console.log(body);
+
+
+    let fecha =  new Date(`${body.billDate}`) ;
+
+    fecha.setDate(fecha.getDate() + body.creditDays);
+    body.expirationDate = fecha;
+    // console.log( body.billDate+ ' es la normal y '+ body.expirationDate + ' con lso dias sumados');
+
     const data = await Bill.create(body);
+
+    const amount = {
+      unPaid: body.amountUSD,
+      idSeller: body.idSeller,
+      idBill : body.id
+    }
+
+
+
+    
+    const dataAmount = await AmountF.create(amount);
+
+
+
     res.send(data)
   } catch (e) {
     res.status(400).send({error: e.message})

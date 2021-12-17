@@ -9,18 +9,20 @@ Amounts.init({
     autoIncrement: true,
     allowNull: false
   },
-  collectedAmount: {
+  paid: {
     type: DataTypes.STRING(30),
-    allowNull: true
+    allowNull: true,
+    defaultValue: 0
   },
-  toBeDueAmount: {
+  unPaid: {
     type: DataTypes.DECIMAL(8,2),
     allowNull: false
   },
-  overdueAmount: {
+  notPayed: {
     type: DataTypes.DECIMAL(20,3),
     defaultValue: 0,
-    allowNull: false
+    allowNull: true,
+    defaultValue: 0
   }
 
 }, {sequelize: db, modelName: 'amounts'});

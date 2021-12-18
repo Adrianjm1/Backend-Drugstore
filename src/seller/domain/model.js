@@ -20,6 +20,15 @@ Seller.init({
   identification: {
     type: DataTypes.STRING(15),
     allowNull: false
+  },
+  commissionUSD:{
+    type: DataTypes.DECIMAL(20,3),
+    defaultValue: 0,
+
+  },
+  commissionBS:{
+    type: DataTypes.DECIMAL(20,3),
+    defaultValue: 0,
   }
 
 }, {sequelize: db, modelName: 'seller'});

@@ -1,5 +1,5 @@
 const Bill = require('../domain');
-const { Bil } = require('../validations');
+const Seller = require('../../seller/domain/model');
 const AmountF = require('../../amounts/domain')
 // const { Fac } = require('../validations');
 
@@ -18,6 +18,7 @@ async function getOne(req, res){
   try {
     const  id  = req.params.id;
     const data = await Bill.single({
+      include: [ { model: Seller, attributes: ['name','lastname'] }],
       where: {id}
     });
     res.send(data)

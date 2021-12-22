@@ -50,14 +50,14 @@ async function make(req, res) {
 }
 
 
-async function updateToDate(req, res) {
-  try {
-    const data = await Amounts.all();
-    res.send(data)
-  } catch (e) {
-    res.status(400).send({ error: e.message })
-  }
-}
+// async function updateToDate(req, res) {
+//   try {
+//     const data = await Amounts.all();
+//     res.send(data)
+//   } catch (e) {
+//     res.status(400).send({ error: e.message })
+//   }
+// }
 
 
 

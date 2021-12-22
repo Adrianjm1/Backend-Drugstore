@@ -4,7 +4,7 @@ const {validToken} = require('../../user/controllers/middleware');
 // Rutas...
 
 
-Router.get('/', validToken, Controller.getAll);
+Router.get('/',  Controller.getAll);
 //Router.get('/:id', validToken, Controller.getOne); 
 Router.get('/:id', Controller.getOne); 
 Router.get('/make', validToken, Controller.make);

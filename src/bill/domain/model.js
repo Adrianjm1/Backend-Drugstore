@@ -54,7 +54,7 @@ Bill.init({
     allowNull: false
   },
   sellersCommission: {
-    type: DataTypes.DECIMAL(20,3),
+    type: DataTypes.DECIMAL(20,2),
     defaultValue: 0,
     allowNull: false
   },

@@ -17,6 +17,7 @@ Seller.init({
     type: DataTypes.STRING(20),
     allowNull: false
   },
+  
   identification: {
     type: DataTypes.STRING(15),
     allowNull: false

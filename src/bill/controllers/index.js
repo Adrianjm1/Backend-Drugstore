@@ -1,11 +1,15 @@
 const Bill = require('../domain');
 const Seller = require('../../seller/domain/model');
-const AmountF = require('../../amounts/domain')
+const AmountF = require('../../amounts/domain');
+const Amounts = require('../../amounts/domain/model');
 // const { Fac } = require('../validations');
 
 async function getAll(req, res){
   try {
-    const data = await Bill.all();
+    const data = await Bill.all({
+      include: [ { model: Amounts }],
+
+    });
     res.send(data)
   } catch (e) {
     res.status(400).send({error: e.message})

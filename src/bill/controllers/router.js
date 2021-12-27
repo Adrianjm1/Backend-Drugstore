@@ -4,12 +4,13 @@ const {validToken} = require('../../user/controllers/middleware');
 // Rutas...
 
 
-Router.get('/',  Controller.getAll);
-//Router.get('/:id', validToken, Controller.getOne); 
+Router.get('/unpaid', Controller.getUnPaid); 
+Router.get('/notpayed', Controller.getNotPayed); 
+Router.get('/paid', Controller.getPaid); 
 Router.get('/:id', Controller.getOne); 
-Router.get('/make', validToken, Controller.make);
 Router.post('/create', validToken, Controller.createBill);
 Router.delete('/delete/:id', validToken, Controller.deleteBill);
+Router.get('/',  Controller.getAll);
 
 
 module.exports = Router

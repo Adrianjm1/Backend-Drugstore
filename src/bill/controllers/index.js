@@ -2,6 +2,7 @@ const Bill = require('../domain');
 const Seller = require('../../seller/domain/model');
 const AmountF = require('../../amounts/domain');
 const Amounts = require('../../amounts/domain/model');
+const { Op } = require("sequelize");
 // const { Fac } = require('../validations');
 
 async function getAll(req, res){
@@ -31,39 +32,6 @@ async function getOne(req, res){
   }
 }
 
-async function make(req, res) {
-  // try {
-
-  //   const body = await Bill.validateAsync(req.body);
-
-  //   const data = await LocalFunctions.single({
-  //     attributes: ['id', 'balance'],
-  //     where: { code: body.code }
-  //   });
-
-  //   if (!data) {
-  //     return res.send({
-  //       ok: false,
-  //       message: 'El codigo ingresado no existe'
-  //     })
-  //   }
-
-  //   data.balance = parseFloat(data.balance) - parseFloat(body.amountUSD) - parseFloat(body.nota);
-
-  //   body.idLocal = data.id;
-  //   body.idAdmin = req.usuario.id;
-  //   body.restanteUSD = data.balance;
-
-  //   const save = await Payments.create(body);
-  //   const balanceUpdated = await LocalFunctions.updateTab({ balance: data.balance }, { where: { id: data.id } });
-
-  //   res.send({ save, balanceUpdated });
-
-
-  // } catch (e) {
-  //   res.status(400).send({ error: e.message })
-  // }
-}
 
 
 
@@ -121,15 +89,79 @@ async function deleteBill(req, res) {
   }
 }
   
+async function getUnPaid(req, res){
+  try {
+    const data = await Bill.all({
+      include: {
+        model: Amounts,
+        where: {
+          unPaid: {
+            [Op.gt]: 0
+          },
+          notPayed: {
+            [Op.eq]: 0
+          }
+        }
+      }
+    });
+    res.send(data)
+  } catch (e) {
+    res.status(400).send({error: e.message})
+  }
+}
 
 
+async function getPaid(req, res){
+  try {
+    const data = await Bill.all({
+      include: {
+        model: Amounts,
+        where: {
+          paid: {
+            [Op.gt]: 0
+          },
+          notPayed: {
+            [Op.eq]: 0
+          },
+          unPaid: {
+            [Op.eq]: 0
+          },
+        }
+      }
+    });
+    res.send(data)
+  } catch (e) {
+    res.status(400).send({error: e.message})
+  }
+}
+
+
+async function getNotPayed(req, res){
+  try {
+    const data = await Bill.all({
+      include: {
+        model: Amounts,
+        where: {
+          notPayed: {
+            [Op.gt]: 0
+          }
+        }
+      }
+    });
+    res.send(data)
+  } catch (e) {
+    res.status(400).send({error: e.message})
+  }
+}
 
 
 
 module.exports = {
   getAll,
   getOne,
-  make,
   createBill,
-  deleteBill
+  deleteBill,
+  getUnPaid,
+  getNotPayed,
+  getPaid
 }

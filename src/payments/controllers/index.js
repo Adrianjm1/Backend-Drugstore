@@ -38,6 +38,7 @@ async function getPaymentsByDay(req, res){
 
         let sumBS = 0;
         let sumUSD = 0;
+        let total = 0;
 
         resp.map(datos => {
 
@@ -49,13 +50,16 @@ async function getPaymentsByDay(req, res){
 
           }
 
+          total = total + parseFloat(datos.amountUSD);
+
         });
 
         return res.send({
           ok: true,
           pagos: resp,
-          sumaUSD: `${sumUSD} USD`,
-          sumaBS: `${sumBS} Bs`
+          sumaUSD: `${sumUSD}`,
+          sumaBS: `${sumBS}`,
+          total: `${total}`
         })
 
       }
@@ -97,6 +101,7 @@ async function getPaymentsByMonth(req, res){
 
         let sumBS = 0;
         let sumUSD = 0;
+        let total = 0;
         pagos = [];
 
         resp.map(datos => {
@@ -113,6 +118,8 @@ async function getPaymentsByMonth(req, res){
   
             }
 
+            total = total + parseFloat(datos.amountUSD);
+
           }
 
         });
@@ -120,8 +127,9 @@ async function getPaymentsByMonth(req, res){
         return res.send({
           ok: true,
           pagos,
-          sumaUSD: `${sumUSD} USD`,
-          sumaBS: `${sumBS} Bs`
+          sumaUSD: `${sumUSD}`,
+          sumaBS: `${sumBS}`,
+          total: `${total}`
         })
 
       }

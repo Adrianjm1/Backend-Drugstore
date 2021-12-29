@@ -23,7 +23,7 @@ async function getOne(req, res){
   try {
     const  id  = req.params.id;
     const data = await Bill.single({
-      include: [ { model: Seller, attributes: ['name','lastname'] }],
+      include: [ { model: Seller, attributes: ['name','lastname'] }, {model: Amounts}],
       where: {id}
     });
     res.send(data)

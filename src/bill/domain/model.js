@@ -29,10 +29,7 @@ Bill.init({
     type: DataTypes.INTEGER,
     allowNull: false
   },
-  billNumber: {
-    type: DataTypes.STRING(30),
-    allowNull: false
-  },
+ 
   client: {
     type: DataTypes.STRING(50),
     allowNull: false

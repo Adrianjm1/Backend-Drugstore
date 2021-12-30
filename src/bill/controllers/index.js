@@ -38,7 +38,7 @@ async function getOne(req, res){
 
 async function createBill(req, res) {
   try {
-    const body = await Bil.validateAsync(req.body);
+    const body = req.body;
 
 
     let fecha =  new Date(`${body.billDate}`) ;

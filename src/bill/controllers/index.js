@@ -42,9 +42,13 @@ async function createBill(req, res) {
 
 
     let fecha =  new Date(`${body.billDate}`) ;
-
     fecha.setDate(fecha.getDate() + body.creditDays);
-    body.expirationDate = fecha;
+    console.log(fecha);
+
+    let fechaA = fecha.toLocaleString();
+    console.log(fechaA);
+
+    body.expirationDate = fechaA;
 
     Bill.create(body)
       .then(data => {

@@ -17,19 +17,10 @@ Bill.init({
     type: DataTypes.DATE,
     allowNull: false
   },
-  creditDays: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
   expirationDate: {
     type: DataTypes.DATE,
     allowNull: true
   },
-  daysLate: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
- 
   client: {
     type: DataTypes.STRING(50),
     allowNull: false
@@ -42,6 +33,10 @@ Bill.init({
     type: DataTypes.DECIMAL(8,2),
     allowNull: false
   },
+  amountBS: {
+    type: DataTypes.DECIMAL(8,2),
+    allowNull: false
+  },
   location: {
     type: DataTypes.STRING(60),
     allowNull: false
@@ -50,9 +45,8 @@ Bill.init({
     type: DataTypes.STRING(15),
     allowNull: false
   },
-  sellersCommission: {
-    type: DataTypes.DECIMAL(20,2),
-    defaultValue: 0,
+  sellersComission: {
+    type: DataTypes.DECIMAL(8,2),
     allowNull: false
   },
 

@@ -40,15 +40,10 @@ async function createBill(req, res) {
   try {
     const body = req.body;
 
+    let amountBS = body.exchange * body.amountUSD
 
-    let fecha =  new Date(`${body.billDate}`) ;
-    fecha.setDate(fecha.getDate() + body.creditDays);
-    console.log(fecha);
+    body.amountBS = amountBS
 
-    let fechaA = fecha.toLocaleString();
-    console.log(fechaA);
-
-    body.expirationDate = fechaA;
 
     Bill.create(body)
       .then(data => {

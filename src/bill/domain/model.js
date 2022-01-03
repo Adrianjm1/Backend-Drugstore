@@ -37,6 +37,10 @@ Bill.init({
     type: DataTypes.DECIMAL(8,2),
     allowNull: false
   },
+    exchange: {
+    type: DataTypes.DECIMAL(8,2),
+    allowNull: false
+  },
   location: {
     type: DataTypes.STRING(60),
     allowNull: false

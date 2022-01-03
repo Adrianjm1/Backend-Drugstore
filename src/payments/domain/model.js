@@ -16,7 +16,7 @@ Payment.init({
   exchangeRate: {
     type: DataTypes.DECIMAL(20,3),
     defaultValue: 0,
-    allowNull: false
+    allowNull: true
   },
   referenceNumber: {
     type: DataTypes.STRING(30),
@@ -33,7 +33,6 @@ Payment.init({
   },
   paymentUSD: {
     type: DataTypes.BOOLEAN,
-    defaultValue: true,
     allowNull: false
   }
 

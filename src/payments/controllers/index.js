@@ -2,6 +2,7 @@ const Payment = require('../domain');
 const Bill = require('../../bill/domain/model');
 const BillFunctions = require('../../bill/domain/index');
 const AmountsFunctions = require('../../amounts/domain/index');
+const SellerF = require('../../seller/domain/index');
 
 async function getAll(req, res){
   try {
@@ -164,7 +165,7 @@ async function create(req, res){
     const body = req.body;
 
     BillFunctions.single({
-      attributes: ['id', 'amountUSD', 'idSeller'],
+      attributes: ['id', 'amountUSD', 'idSeller', 'sellersComission'],
       where: {id: body.id}
     })
       .then(data => {
@@ -198,9 +199,36 @@ async function create(req, res){
                 let noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
                 let nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
                 body.idBill = data.id;
+
+                SellerF.single({
+                  where: {id: data.idSeller}
+                }).then(sellerData =>{
+
+                  console.log(body.exchangeRate + ' soy la tasa');
+
+                  if (body.paymentUSD == false) {
+                    let comisionAux = (body.amountUSD * (data.sellersComission / 100));
+                    console.log('La comision que ya trae es ' + sellerData.commissionUSD+ ' y la que se le sumara es ' + comisionAux);
+                    let comision = parseFloat(comisionAux)  + parseFloat(sellerData.commissionUSD); 
+                    console.log(comision + '  entre a usd');
+                    SellerF.up({commissionUSD: comision}, {where: {id: data.idSeller}});
+                  }else{
+
+
+                    let comisionAux = ((body.amountUSD * body.exchangeRate) * (data.sellersComission / 100));
+                    console.log('La comision que ya trae es ' + sellerData.commissionBS+ ' y la que se le sumara es ' + comisionAux);
+                    let comision = parseFloat(comisionAux)  + parseFloat(sellerData.commissionBS); 
+                    console.log(comision + '  entre a BS');
+                    SellerF.up({comisionBs: comision}, {where: {id: data.idSeller}});
+  
+  
+                  }
+
+                })
+
     
                 Promise.all([
-                  BillFunctions.up({amountUSD: nuevoSaldo}, {where: {id: data.id}}),
+                  // BillFunctions.up({amountUSD: nuevoSaldo}, {where: {id: data.id}}),
                   AmountsFunctions.up({paid: pagado, unPaid: noPagado}, {where: {idBill: data.id}}),
                   Payment.create(body)
                 ])
@@ -210,12 +238,14 @@ async function create(req, res){
                   })
                   .catch(e => {
                     res.status(400).send({error4: e.message});
+                    console.log(e);
     
                   })
 
               })
               .catch(err => {
                 res.status(400).send({error3: err.message});
+                console.log(err);
 
               })
 
@@ -232,9 +262,31 @@ async function create(req, res){
                 let nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
                 let noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
                 body.idBill = data.id;
+
+                SellerF.single({
+                  where: {id: data.idSeller}
+                }).then(sellerData =>{
+
+                  console.log(body.exchangeRate + ' soy la tasa');
+
+                  if (body.paymentUSD == false) {
+                    let comisionAux = (body.amountUSD * (data.sellersComission / 100));
+                    let comision = parseFloat(comisionAux)  + parseFloat(sellerData.commissionUSD); 
+                    SellerF.up({commissionUSD: comision}, {where: {id: data.idSeller}});
+                  }else{
+
+
+                    let comisionAux = ((body.amountUSD * body.exchangeRate) * (data.sellersComission / 100));
+                    let comision = parseFloat(comisionAux)  + parseFloat(sellerData.commissionBS); 
+                    SellerF.up({comisionBs: comision}, {where: {id: data.idSeller}});
+  
+  
+                  }
+
+                })
     
                 Promise.all([
-                  BillFunctions.up({payed: true, amountUSD: nuevoSaldo}, {where: {id: data.id}}),
+                  // BillFunctions.up({payed: true, amountUSD: nuevoSaldo}, {where: {id: data.id}}),
                   AmountsFunctions.up({paid: pagado, unPaid: noPagado}, {where: {idBill: data.id}}),
                   Payment.create(body)
                 ])

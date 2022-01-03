@@ -9,6 +9,10 @@ function all(attr) {
   return Seller.findAll(attr)
 }
 
+function up(attr,where) {
+  return Seller.update(attr,where)
+}
+
 function create(attr){
   return Seller.create(attr)
 }
@@ -17,5 +21,6 @@ function create(attr){
 module.exports = {
   single,
   all,
-  create
+  create,
+  up
 }

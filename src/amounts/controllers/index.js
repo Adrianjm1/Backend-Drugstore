@@ -99,12 +99,6 @@ async function updateToDate(req, res) {
           console.log(`factura ${data.id} en fecha se compararon ${today.toLocaleDateString()} y ${data.expirationDate.toLocaleDateString()}`);
         }
 
-
-
-
-
-
-
         // res.send( fecha.toLocaleDateString())
       }
     })

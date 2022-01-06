@@ -81,13 +81,16 @@ async function updateToDate(req, res) {
 
           let idBill = data.id;
 
-          amountsData.map(amountD =>{
+          amountsData.map(amountD => {
 
-            if(amountD.idBill === data.id ){
-              let notPayed = amountD.unPaid;
-              let unPaid = 0;
-              let updated = Amounts.up({ notPayed, unPaid }, { where: { idBill } });
+            if (amountD.idBill === data.id) {
 
+              if (amountD.notPayed ==0 ) {
+                let notPayed = amountD.unPaid;
+                let unPaid = 0;
+                let updated = Amounts.up({ notPayed, unPaid }, { where: { idBill } });
+
+              }
             }
 
           })

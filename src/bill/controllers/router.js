@@ -7,6 +7,7 @@ const {validToken} = require('../../user/controllers/middleware');
 Router.get('/unpaid', Controller.getUnPaid); 
 Router.get('/notpayed', Controller.getNotPayed); 
 Router.get('/paid', Controller.getPaid); 
+Router.get('/seller/:id', Controller.getBillBySeller); 
 Router.get('/:id', Controller.getOne); 
 Router.post('/create',  Controller.createBill);
 Router.delete('/delete/:id', validToken, Controller.deleteBill);

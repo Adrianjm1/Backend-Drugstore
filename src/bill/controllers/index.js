@@ -17,6 +17,19 @@ async function getAll(req, res){
   }
 }
 
+async function getBillBySeller(req, res){
+  try {
+    const idSeller = req.params.id;
+    const data = await Bill.all({
+      where:{idSeller},
+
+    });
+    res.send(data)
+  } catch (e) {
+    res.status(400).send({error: e.message})
+  }
+}
+
 
 
 async function getOne(req, res){
@@ -163,5 +176,6 @@ module.exports = {
   deleteBill,
   getUnPaid,
   getNotPayed,
-  getPaid
+  getPaid,
+  getBillBySeller
 }

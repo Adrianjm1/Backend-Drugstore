@@ -13,10 +13,6 @@ SellerPayment.init({
     type: DataTypes.DECIMAL(8,2),
     allowNull: false
   },
-  date: {
-    type: DataTypes.STRING(15),
-    allowNull: false
-  },
   bank: {
     type: DataTypes.STRING(30),
     defaultValue: '',

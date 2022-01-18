@@ -5,6 +5,8 @@ const Controller = require('./index.js');
 Router.get('/', Controller.getAll);
 
 
+
+
 Router.post('/create', Controller.create);
 Router.get('/:id', Controller.getPayBySeller);
 

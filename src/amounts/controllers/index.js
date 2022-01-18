@@ -76,9 +76,13 @@ async function updateToDate(req, res) {
         // let fecha =  new Date(`${body.billDate}`) ;
         //  console.log(fecha);
         //  fecha.setDate(fecha.getDate() + data.creditDays);
+        console.log(today.getFullYear() + ' y ' + (data.expirationDate).getFullYear());
 
-        if (today.toLocaleDateString() > data.expirationDate.toLocaleDateString()) {
+        if (today.toLocaleDateString() > data.expirationDate.toLocaleDateString()  || today.getFullYear() > data.expirationDate.getFullYear()) {
 
+    
+
+          // console.log('expirada :' +  data.id);
           let idBill = data.id;
 
           amountsData.map(amountD => {

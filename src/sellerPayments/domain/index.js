@@ -13,9 +13,13 @@ function create(attr){
   return SellerPayment.create(attr)
 }
 
+function up(attr,where) {
+  return SellerPayment.update(attr,where)
+}
 
 module.exports = {
   single,
   all,
-  create
+  create,
+  up
 }

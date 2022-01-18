@@ -1,3 +1,4 @@
+const Seller = require('../../seller/domain/');
 const Payment = require('../domain');
 const SellerPayment = require('../domain');
 
@@ -31,6 +32,27 @@ async function create(req, res){
   
       SellerPayment.create(body)
         .then(data => {
+
+          Seller.single({where: {id: body.idSeller}})
+          .then(res=>{
+
+            console.log(res);
+            let idSeller = body.idSeller
+            let commissionUSD;
+            let commissionBS;
+  
+  
+            if (body.paymentUSD == 0){
+              let commissionBS = parseFloat(res.commissionBS) - parseFloat(body.amount) 
+  
+              let update = Seller.up (  {commissionBS}    , {where:{id: idSeller}})
+            } else{
+              let commissionUSD = parseFloat(res.commissionUSD) - parseFloat(body.amount) 
+  
+              let update = Seller.up (  {commissionUSD}    , {where:{id: idSeller}})
+            }
+
+          } )
   
           res.send({data})
   

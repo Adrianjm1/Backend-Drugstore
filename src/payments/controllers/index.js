@@ -204,21 +204,16 @@ async function create(req, res){
                   where: {id: data.idSeller}
                 }).then(sellerData =>{
 
-                  console.log(body.exchangeRate + ' soy la tasa');
 
                   if (body.paymentUSD == false) {
                     let comisionAux = (body.amountUSD * (data.sellersComission / 100));
-                    console.log('La comision que ya trae es ' + sellerData.commissionUSD+ ' y la que se le sumara es ' + comisionAux);
                     let comision = parseFloat(comisionAux)  + parseFloat(sellerData.commissionUSD); 
-                    console.log(comision + '  entre a usd');
                     SellerF.up({commissionUSD: comision}, {where: {id: data.idSeller}});
                   }else{
 
 
                     let comisionAux = ((body.amountUSD * body.exchangeRate) * (data.sellersComission / 100));
-                    console.log('La comision que ya trae es ' + sellerData.commissionBS+ ' y la que se le sumara es ' + comisionAux);
                     let comision = parseFloat(comisionAux)  + parseFloat(sellerData.commissionBS); 
-                    console.log(comision + '  entre a BS');
                     SellerF.up({comisionBs: comision}, {where: {id: data.idSeller}});
   
   
@@ -267,7 +262,6 @@ async function create(req, res){
                   where: {id: data.idSeller}
                 }).then(sellerData =>{
 
-                  console.log(body.exchangeRate + ' soy la tasa');
 
                   if (body.paymentUSD == false) {
                     let comisionAux = (body.amountUSD * (data.sellersComission / 100));

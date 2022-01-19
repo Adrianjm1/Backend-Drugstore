@@ -93,7 +93,6 @@ async function createBill(req, res) {
 async function deleteBill(req, res) {
   try {
     const id = req.params.id
-    console.log(id);
      const data = await Bill.deleteB({ where: { id } });
     res.send(`${data}  Factura borrada con exito`)
   } catch (e) {

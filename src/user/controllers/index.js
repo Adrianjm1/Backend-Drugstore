@@ -1,10 +1,10 @@
 const User = require('../domain');
 const md5 = require('md5');
 const jwt = require('jsonwebtoken');
-const {Username, New} = require('../validations/index');
+const { Username, New } = require('../validations/index');
 
 
-async function login(req, res){
+async function login(req, res) {
 
   try {
     const { username, password } = await Username.validateAsync(req.body);
@@ -12,10 +12,10 @@ async function login(req, res){
     const passwordHash = md5(password);
 
     User.single({
-      where: {username}
+      where: { username }
     }).then(data => {
 
-      if(!data){
+      if (!data) {
         return res.send({
           ok: false,
           resp: '(Usuario) o contraseña incorrectos'    //Se colocan los parentesis de muestra, pero se deben quitar
@@ -24,7 +24,7 @@ async function login(req, res){
 
       console.log(data);
 
-      if(passwordHash !== data.password){
+      if (passwordHash !== data.password) {
         return res.send({
           ok: false,
           resp: 'Usuario o (contraseña) incorrectos'      //Se colocan los parentesis de muestra, pero se deben quitar
@@ -44,7 +44,7 @@ async function login(req, res){
       });
 
 
-    }).catch(err =>{
+    }).catch(err => {
       return res.send({
         ok: false,
         resp: 'Se ha producido un error, por favor vuelve a intentarlo',
@@ -53,12 +53,26 @@ async function login(req, res){
     });
 
   } catch (e) {
-    res.status(400).send({error: e.message})
+    res.status(400).send({ error: e.message })
   }
 
 }
 
-async function signup(req, res){
+async function comprobate(req, res) {
+
+  try {
+    res.send({
+      ok: true,
+      message: 'Auth-token',
+    });
+
+  } catch (e) {
+    res.status(400).send({ error: e.message })
+  }
+
+}
+
+async function signup(req, res) {
 
   try {
     const body = await New.validateAsync(req.body);
@@ -72,7 +86,7 @@ async function signup(req, res){
         usuario: data,
       });
 
-    }).catch(err =>{
+    }).catch(err => {
       return res.send({
         ok: false,
         resp: 'Se ha producido un error, por favor vuelve a intentarlo',
@@ -81,7 +95,7 @@ async function signup(req, res){
     });
 
   } catch (e) {
-    res.status(400).send({error: e.message})
+    res.status(400).send({ error: e.message })
   }
 
 }
@@ -89,5 +103,6 @@ async function signup(req, res){
 
 module.exports = {
   login,
-  signup
+  signup,
+  comprobate
 }

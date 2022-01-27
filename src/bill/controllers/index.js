@@ -141,7 +141,23 @@ async function getPaid(req, res){
         }
       }
     });
-    res.send(data)
+
+    let sumUSD = 0;
+    let sumBS = 0;
+
+    data.map(data => {
+      sumUSD = sumUSD + parseFloat(data.amountUSD);
+      sumBS = sumBS + (parseFloat(data.amountUSD) * parseFloat(data.exchange))
+    });
+
+    res.send({
+      data,
+      sumUSD,
+      sumBS
+    });
+
+
+
   } catch (e) {
     res.status(400).send({error: e.message})
   }

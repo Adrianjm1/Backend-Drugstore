@@ -3,7 +3,7 @@ const Controller = require('./index.js');
 const { validToken } = require('../../user/controllers/middleware');
 // Rutas...
 
-
+Router.get('/correct', Controller.correcting);
 Router.get('/unpaid', Controller.getUnPaid);
 Router.get('/notpayed', validToken, Controller.getNotPayed);
 Router.get('/paid', Controller.getPaid);

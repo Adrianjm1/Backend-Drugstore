@@ -90,6 +90,39 @@ async function createBill(req, res) {
 }
 
 
+async function correcting(req, res) {
+  try {
+
+    const data = await Bill.all({});
+
+    data.map(data => {
+
+      let amount = {
+        unPaid: data.amountUSD,
+        idSeller: data.idSeller,
+        idBill : data.id,
+      }  
+
+      AmountF.create(amount)
+      .then(amounts => {
+
+
+
+      }).catch(e => {
+        res.status(400).send({eamounts: e.message});
+      });
+
+    });
+
+    res.send({data: data.length})
+
+
+  } catch (e) {
+    res.status(400).send({error: e.message})
+  }
+}
+
+
 async function deleteBill(req, res) {
   try {
     const id = req.params.id
@@ -192,5 +225,6 @@ module.exports = {
   getUnPaid,
   getNotPayed,
   getPaid,
-  getBillBySeller
+  getBillBySeller,
+  correcting
 }

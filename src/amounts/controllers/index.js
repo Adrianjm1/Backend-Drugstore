@@ -71,7 +71,7 @@ async function updateToDate(req, res) {
     dataBIll.map(data => {
       if (data.id) {
 
-        console.log(today.getFullYear() + ' y ' + (data.expirationDate).getFullYear());
+        // console.log(today.getFullYear() + ' y ' + (data.expirationDate).getFullYear());
 
         if (today.toLocaleDateString() > data.expirationDate.toLocaleDateString()  || today.getFullYear() > data.expirationDate.getFullYear()) {
 
@@ -95,9 +95,9 @@ async function updateToDate(req, res) {
 
 
 
-          console.log("Se actualizo la info de la factura " + idBill);
+          // console.log("Se actualizo la info de la factura " + idBill);
         } else {
-          console.log(`factura ${data.id} en fecha se compararon ${today.toLocaleDateString()} y ${data.expirationDate.toLocaleDateString()}`);
+          // console.log(`factura ${data.id} en fecha se compararon ${today.toLocaleDateString()} y ${data.expirationDate.toLocaleDateString()}`);
         }
 
         // res.send( fecha.toLocaleDateString())

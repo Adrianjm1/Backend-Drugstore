@@ -120,24 +120,37 @@ async function createBill(req, res) {
 async function correcting(req, res) {
   try {
 
+    let count =0;
     const data = await Bill.all({});
 
+    const amountData = await AmountF.all({});
+
     data.map(data => {
+      count =0;
 
-      let amount = {
-        unPaid: data.amountUSD,
-        idSeller: data.idSeller,
-        idBill: data.id,
+      amountData.map(datos => {
+          if  (datos.idBill == data.id){
+              count++;
+          }
+      })
+
+      if (count == 0){
+
+        let amount = {
+          unPaid: data.amountUSD,
+          idSeller: data.idSeller,
+          idBill: data.id,
+        }
+  
+        AmountF.create(amount)
+          .then(amounts => {
+  
+  
+  
+          }).catch(e => {
+            res.status(400).send({ eamounts: e.message });
+          });
       }
-
-      AmountF.create(amount)
-        .then(amounts => {
-
-
-
-        }).catch(e => {
-          res.status(400).send({ eamounts: e.message });
-        });
 
     });
 

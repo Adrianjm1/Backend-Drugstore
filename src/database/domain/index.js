@@ -8,7 +8,17 @@ const { Sequelize } = require('sequelize');
 //     dialect: 'mysql'
 //   });
 
-module.exports = new Sequelize('drogueri_enmanuelle', 'drogueri_admin', 'Enmanuelle2022', {
+//---------------------------------------------------------------------------------------------------
+
+/* module.exports = new Sequelize('drogueri_enmanuelle', 'drogueri_admin', 'Enmanuelle2022', {
     host: 'host.hostingmaracaibo.com',
+    dialect: 'mysql'
+  }); */
+
+//--------------------------------------------------------------------------------------------------
+
+
+  module.exports = new Sequelize('enmanuel', 'root', '', {
+    host: 'localhost',
     dialect: 'mysql'
   });

@@ -161,8 +161,11 @@ async function getOne(req, res) {
 }
 
 async function create(req, res) {
+
   try {
     const body = req.body;
+
+    console.log(body.overPaidBS);
 
     BillFunctions.single({
       attributes: ['id', 'amountUSD', 'idSeller', 'sellersComission'],
@@ -223,7 +226,7 @@ async function create(req, res) {
 
 
                 Promise.all([
-                  // BillFunctions.up({amountUSD: nuevoSaldo}, {where: {id: data.id}}),
+                  BillFunctions.up({amountUSD: nuevoSaldo}, {where: {id: data.id}}),
                   AmountsFunctions.up({ paid: pagado, unPaid: noPagado }, { where: { idBill: data.id } }),
                   Payment.create(body)
                 ])
@@ -264,33 +267,34 @@ async function create(req, res) {
 
 
                   if (body.paymentUSD == false) {
+
                     let comisionAux = (body.amountUSD * (data.sellersComission / 100));
                     let comision = parseFloat(comisionAux) + parseFloat(sellerData.commissionUSD);
                     SellerF.up({ commissionUSD: comision }, { where: { id: data.idSeller } });
-                  } else {
 
+                  } else {
 
                     let comisionAux = ((body.amountUSD * body.exchangeRate) * (data.sellersComission / 100));
                     let comision = parseFloat(comisionAux) + parseFloat(sellerData.commissionBS);
                     SellerF.up({ comisionBs: comision }, { where: { id: data.idSeller } });
-
-
                   }
 
+                  Promise.all([
+                    AmountsFunctions.up({ paid: pagado, unPaid: noPagado }, { where: { idBill: data.id } }),
+                    BillFunctions.up({ overPaidBS: body.overPaidBS }, { where: { id: data.id } }),
+                    Payment.create(body)
+                  ])
+                    .then(resp => {
+                      res.send(resp);
+
+                    })
+                    .catch(e => {
+                      res.status(400).send({ error4: e.message });
+
+                    })
+
+
                 })
-
-                Promise.all([
-                  AmountsFunctions.up({ paid: pagado, unPaid: noPagado }, { where: { idBill: data.id } }),
-                  Payment.create(body)
-                ])
-                  .then(resp => {
-                    res.send(resp);
-
-                  })
-                  .catch(e => {
-                    res.status(400).send({ error4: e.message });
-
-                  })
 
               })
               .catch(err => {

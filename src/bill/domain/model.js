@@ -42,7 +42,7 @@ Bill.init({
     allowNull: false
   },
   overPaidBS: {
-    type: DataTypes.DECIMAL(20, 3),
+    type: DataTypes.DECIMAL(8, 2),
     defaultValue: 0,
     allowNull: true
   },

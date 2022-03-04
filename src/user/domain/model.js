@@ -29,6 +29,11 @@ User.init({
     type: DataTypes.STRING(80),
     allowNull: false
   },
+  viewer: {
+    type: DataTypes.INTEGER(),
+    allowNull: false
+
+  },
 
 }, {sequelize: db, modelName: 'user'});
 

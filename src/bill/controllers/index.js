@@ -33,7 +33,7 @@ async function File(req, res) {
   try {
 
     var originalFilename = req.file.path;
-    console.log(originalFilename); 
+    console.log(originalFilename);
 
 
   } catch (e) {
@@ -48,7 +48,7 @@ async function getBillBySeller(req, res) {
     const idSeller = req.params.id;
     const data = await Bill.all({
       where: { idSeller },
-      
+
 
     });
     res.send(data)
@@ -120,33 +120,33 @@ async function createBill(req, res) {
 async function correcting(req, res) {
   try {
 
-    let count =0;
+    let count = 0;
     const data = await Bill.all({});
 
     const amountData = await AmountF.all({});
 
     data.map(data => {
-      count =0;
+      count = 0;
 
       amountData.map(datos => {
-          if  (datos.idBill == data.id){
-              count++;
-          }
+        if (datos.idBill == data.id) {
+          count++;
+        }
       })
 
-      if (count == 0){
+      if (count == 0) {
 
         let amount = {
           unPaid: data.amountUSD,
           idSeller: data.idSeller,
           idBill: data.id,
         }
-  
+
         AmountF.create(amount)
           .then(amounts => {
-  
-  
-  
+
+
+
           }).catch(e => {
             res.status(400).send({ eamounts: e.message });
           });
@@ -206,14 +206,24 @@ async function getPaid(req, res) {
             [Op.gt]: 0
           },
           notPayed: {
-            [Op.eq]: 0
+            [Op.gte]: 0
           },
           unPaid: {
-            [Op.eq]: 0
+            [Op.lte]: 0
           },
         }
       }
     });
+
+    /*     paid: {
+          [Op.gt]: 0
+        },
+        notPayed: {
+          [Op.gt]: 0
+        },
+        unPaid: {
+          [Op.lt]: 0
+        }, */
 
     let sumUSD = 0;
     let sumBS = 0;
@@ -245,6 +255,9 @@ async function getNotPayed(req, res) {
         where: {
           notPayed: {
             [Op.gt]: 0
+          },
+          unPaid: {
+            [Op.gte]: 0
           }
         }
       }

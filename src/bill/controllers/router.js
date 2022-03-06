@@ -31,24 +31,15 @@ const storage = multer.diskStorage({
 
 Router.post('/file', upload.single('file'), (req, res) => {
     
-    // console.log(req.file.originalname);
+
 
     filePath = './src/bill/controllers/files/tabla.xlsx'
 
     
     readXlsxFile(filePath).then((rows) => {
-      // `rows` is an array of rows
-      // each row being an array of cells.     
 
-      /**
-      [ [ 'Id', 'Name', 'Address', 'Age' ],
-      [ 1, 'john Smith', 'London', 25 ],
-      [ 2, 'Ahman Johnson', 'New York', 26 ]
-      */
-      // Remove Header ROW
       rows.shift();
-      // console.log(rows);
-      // console.log(rows.length);
+
 
       rows.map(row => {
         let body = {
@@ -73,17 +64,13 @@ Router.post('/file', upload.single('file'), (req, res) => {
         Bill.create(body)
       })
 
-  
-      // Open the MySQL connection
+
     
       })
-    // if (!files) {
-    //   const error = new Error('Please choose files')
-    //   error.httpStatusCode = 400
-    //   return error
-    // }
+
   
-      res.send("Enviada")
+      res.send("Enviada");
+
    
   })
 

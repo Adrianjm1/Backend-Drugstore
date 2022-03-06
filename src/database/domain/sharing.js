@@ -3,6 +3,7 @@ const Payments = require('../../payments/domain/model');
 const Amounts = require('../../amounts/domain/model');
 const Seller = require('../../seller/domain/model');
 const User = require('../../user/domain/model');
+const SellerPayment = require('../../sellerPayments/domain/model');
 
 
 // Bill - Payments: One to Many
@@ -20,3 +21,7 @@ Amounts.belongsTo(Seller,  {foreignKey: 'idSeller'});
 // Bill - Amounts: One to One
 Bill.hasOne(Amounts, {foreignKey: 'idBill'});
 Amounts.belongsTo(Bill,  {foreignKey: 'idBill'});
+
+//   Seller - SellerPayment: One to many
+Seller.hasOne(SellerPayment, {foreignKey: 'idSeller'});
+SellerPayment.belongsTo(Seller,  {foreignKey: 'idSeller'});

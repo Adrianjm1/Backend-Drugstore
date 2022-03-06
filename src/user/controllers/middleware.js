@@ -9,10 +9,7 @@ let validToken = (req, res, next) => {
         if (err) {
             return res.status(401).json({
                 ok: false,
-                err: {
-                    ok: false,
-                    message: 'Token no valido'
-                }
+                message: 'No-auth-token'
             })
         }
 
@@ -23,6 +20,26 @@ let validToken = (req, res, next) => {
 
 }
 
+let checkToken = (req, res, next) => {
+
+    let token = req.get('token');
+
+    jwt.verify(token, 'token-SEED', (err, decoded) => {
+
+        if (err) {
+            return res.send({
+                ok: false,
+                message: 'No-auth-token'
+            })
+        }
+
+        next();
+
+    });
+
+}
+
 module.exports = {
-    validToken
+    validToken,
+    checkToken
 }

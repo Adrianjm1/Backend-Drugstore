@@ -3,32 +3,72 @@ const Seller = require('../../seller/domain/model');
 const AmountF = require('../../amounts/domain');
 const Amounts = require('../../amounts/domain/model');
 const { Op } = require("sequelize");
+var bodyParser = require('body-parser');
+var path = require('path');     //used for file path
+var fs = require('fs');       //File System - for file manipulation
+const multer = require('multer');
+
+
+
 // const { Fac } = require('../validations');
 
-async function getAll(req, res){
+
+
+async function getAll(req, res) {
   try {
     const data = await Bill.all({
-      include: [ { model: Amounts }],
+      include: [{ model: Amounts }],
 
     });
     res.send(data)
   } catch (e) {
-    res.status(400).send({error: e.message})
+    res.status(400).send({ error: e.message })
   }
 }
 
 
 
-async function getOne(req, res){
+
+async function File(req, res) {
   try {
-    const  id  = req.params.id;
-    const data = await Bill.single({
-      include: [ { model: Seller, attributes: ['name','lastname'] }, {model: Amounts}],
-      where: {id}
+
+    var originalFilename = req.file.path;
+    console.log(originalFilename);
+
+
+  } catch (e) {
+    res.status(400).send({ error: e.message })
+  }
+}
+
+
+
+async function getBillBySeller(req, res) {
+  try {
+    const idSeller = req.params.id;
+    const data = await Bill.all({
+      where: { idSeller },
+
+
     });
     res.send(data)
   } catch (e) {
-    res.status(400).send({error: e.message})
+    res.status(400).send({ error: e.message })
+  }
+}
+
+
+
+async function getOne(req, res) {
+  try {
+    const id = req.params.id;
+    const data = await Bill.single({
+      include: [{ model: Seller, attributes: ['name', 'lastname'] }, { model: Amounts }],
+      where: { id }
+    });
+    res.send(data)
+  } catch (e) {
+    res.status(400).send({ error: e.message })
   }
 }
 
@@ -51,9 +91,9 @@ async function createBill(req, res) {
         const amount = {
           unPaid: body.amountUSD,
           idSeller: body.idSeller,
-          idBill : data.id,
-        }  
-        
+          idBill: data.id,
+        }
+
         AmountF.create(amount)
           .then(amounts => {
 
@@ -64,15 +104,61 @@ async function createBill(req, res) {
             });
 
           }).catch(e => {
-            res.status(400).send({eamounts: e.message});
+            res.status(400).send({ eamounts: e.message });
           });
 
       }).catch(e => {
-        res.status(400).send({ebill: e.message});
+        res.status(400).send({ ebill: e.message });
       });
 
   } catch (e) {
-    res.status(400).send({error: e.message})
+    res.status(400).send({ error: e.message })
+  }
+}
+
+
+async function correcting(req, res) {
+  try {
+
+    let count = 0;
+    const data = await Bill.all({});
+
+    const amountData = await AmountF.all({});
+
+    data.map(data => {
+      count = 0;
+
+      amountData.map(datos => {
+        if (datos.idBill == data.id) {
+          count++;
+        }
+      })
+
+      if (count == 0) {
+
+        let amount = {
+          unPaid: data.amountUSD,
+          idSeller: data.idSeller,
+          idBill: data.id,
+        }
+
+        AmountF.create(amount)
+          .then(amounts => {
+
+
+
+          }).catch(e => {
+            res.status(400).send({ eamounts: e.message });
+          });
+      }
+
+    });
+
+    res.send({ data: data.length })
+
+
+  } catch (e) {
+    res.status(400).send({ error: e.message })
   }
 }
 
@@ -80,15 +166,14 @@ async function createBill(req, res) {
 async function deleteBill(req, res) {
   try {
     const id = req.params.id
-    console.log(id);
-     const data = await Bill.deleteB({ where: { id } });
+    const data = await Bill.deleteB({ where: { id } });
     res.send(`${data}  Factura borrada con exito`)
   } catch (e) {
-    res.status(400).send({error: e.message})
+    res.status(400).send({ error: e.message })
   }
 }
-  
-async function getUnPaid(req, res){
+
+async function getUnPaid(req, res) {
   try {
     const data = await Bill.all({
       include: {
@@ -103,14 +188,15 @@ async function getUnPaid(req, res){
         }
       }
     });
+
     res.send(data)
   } catch (e) {
-    res.status(400).send({error: e.message})
+    res.status(400).send({ error: e.message })
   }
 }
 
 
-async function getPaid(req, res){
+async function getPaid(req, res) {
   try {
     const data = await Bill.all({
       include: {
@@ -120,22 +206,48 @@ async function getPaid(req, res){
             [Op.gt]: 0
           },
           notPayed: {
-            [Op.eq]: 0
+            [Op.gte]: 0
           },
           unPaid: {
-            [Op.eq]: 0
+            [Op.lte]: 0
           },
         }
       }
     });
-    res.send(data)
+
+    /*     paid: {
+          [Op.gt]: 0
+        },
+        notPayed: {
+          [Op.gt]: 0
+        },
+        unPaid: {
+          [Op.lt]: 0
+        }, */
+
+    let sumUSD = 0;
+    let sumBS = 0;
+
+    data.map(data => {
+      sumUSD = sumUSD + parseFloat(data.amountUSD);
+      sumBS = sumBS + (parseFloat(data.amountUSD) * parseFloat(data.exchange))
+    });
+
+    res.send({
+      data,
+      sumUSD,
+      sumBS
+    });
+
+
+
   } catch (e) {
-    res.status(400).send({error: e.message})
+    res.status(400).send({ error: e.message })
   }
 }
 
 
-async function getNotPayed(req, res){
+async function getNotPayed(req, res) {
   try {
     const data = await Bill.all({
       include: {
@@ -143,13 +255,16 @@ async function getNotPayed(req, res){
         where: {
           notPayed: {
             [Op.gt]: 0
+          },
+          unPaid: {
+            [Op.gte]: 0
           }
         }
       }
     });
     res.send(data)
   } catch (e) {
-    res.status(400).send({error: e.message})
+    res.status(400).send({ error: e.message })
   }
 }
 
@@ -162,5 +277,9 @@ module.exports = {
   deleteBill,
   getUnPaid,
   getNotPayed,
-  getPaid
+  getPaid,
+  getBillBySeller,
+  correcting,
+  File
+
 }

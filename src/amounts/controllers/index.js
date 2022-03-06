@@ -67,43 +67,38 @@ async function updateToDate(req, res) {
     const dataBIll = await BillF.all();
     let amountsData = await Amounts.all();
     let today = new Date();
-    // res.send(dataBIll)
-
 
     dataBIll.map(data => {
       if (data.id) {
-        //  let fechaF = `${data.createdAt.getDate()}/${data.createdAt.getMonth()+1}/${data.createdAt.getFullYear()}`;
-        // let fecha =  new Date(`${body.billDate}`) ;
-        //  console.log(fecha);
-        //  fecha.setDate(fecha.getDate() + data.creditDays);
 
-        if (today.toLocaleDateString() > data.expirationDate.toLocaleDateString()) {
+        // console.log(today.getFullYear() + ' y ' + (data.expirationDate).getFullYear());
+
+        if (today.toLocaleDateString() > data.expirationDate.toLocaleDateString()  || today.getFullYear() > data.expirationDate.getFullYear()) {
+
+    
 
           let idBill = data.id;
 
-          amountsData.map(amountD =>{
+          amountsData.map(amountD => {
 
-            if(amountD.idBill === data.id ){
-              let notPayed = amountD.unPaid;
-              let unPaid = 0;
-              let updated = Amounts.up({ notPayed, unPaid }, { where: { idBill } });
+            if (amountD.idBill === data.id) {
 
+              if (amountD.notPayed ==0 ) {
+                let notPayed = amountD.unPaid;
+                let unPaid = 0;
+                let updated = Amounts.up({ notPayed, unPaid }, { where: { idBill } });
+
+              }
             }
 
           })
 
 
 
-          console.log("Se actualizo la info de la factura " + idBill);
+          // console.log("Se actualizo la info de la factura " + idBill);
         } else {
-          console.log(`factura ${data.id} en fecha se compararon ${today.toLocaleDateString()} y ${data.expirationDate.toLocaleDateString()}`);
+          // console.log(`factura ${data.id} en fecha se compararon ${today.toLocaleDateString()} y ${data.expirationDate.toLocaleDateString()}`);
         }
-
-
-
-
-
-
 
         // res.send( fecha.toLocaleDateString())
       }

@@ -63,7 +63,7 @@ async function getOne(req, res) {
   try {
     const id = req.params.id;
     const data = await Bill.single({
-      include: [{ model: Seller, attributes: ['name', 'lastname'] }, { model: Amounts }],
+      include: [{ model: Seller, attributes: ['name', 'lastname', 'id'] }, { model: Amounts }],
       where: { id }
     });
     res.send(data)
@@ -214,16 +214,6 @@ async function getPaid(req, res) {
         }
       }
     });
-
-    /*     paid: {
-          [Op.gt]: 0
-        },
-        notPayed: {
-          [Op.gt]: 0
-        },
-        unPaid: {
-          [Op.lt]: 0
-        }, */
 
     let sumUSD = 0;
     let sumBS = 0;

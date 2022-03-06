@@ -194,11 +194,20 @@ async function create(req, res) {
               attributes: ['id', 'paid', 'unPaid', 'notPayed'],
               where: { idBill: data.id }
             })
-              .then(data2 => {
+              .then(data2 => {                
 
                 let pagado = parseFloat(data2[0].paid) + parseFloat(body.amountUSD);
-                let noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
-                let nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+                let noPagado = 0;
+                let nuevoSaldo = 0;
+                let sinPagar = 0;
+                if (data2[0].notPayed > 0) {
+                   sinPagar = parseFloat(data2[0].notPayed) - parseFloat(body.amountUSD);
+                } 
+                else{
+                   noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                   nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+                   sinPagar = parseFloat(data2[0].notPayed);
+                }
                 body.idBill = data.id;
 
                 SellerF.single({
@@ -214,7 +223,7 @@ async function create(req, res) {
                     Promise.all([
                       SellerF.up({ commissionBS: comision }, { where: { id: data.idSeller } }),
                       BillFunctions.up({ amountUSD: nuevoSaldo }, { where: { id: data.id } }),
-                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado }, { where: { idBill: data.id } }),
+                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado, notPayed: sinPagar }, { where: { idBill: data.id } }),
                       Payment.create(body)
                     ])
                       .then(resp => {
@@ -235,7 +244,7 @@ async function create(req, res) {
                     Promise.all([
                       SellerF.up({ commissionUSD: comision }, { where: { id: data.idSeller } }),
                       BillFunctions.up({ amountUSD: nuevoSaldo }, { where: { id: data.id } }),
-                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado }, { where: { idBill: data.id } }),
+                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado, notPayed: sinPagar }, { where: { idBill: data.id } }),
                       Payment.create(body)
                     ])
                       .then(resp => {
@@ -268,8 +277,20 @@ async function create(req, res) {
               .then(data2 => {
 
                 let pagado = parseFloat(data2[0].paid) + parseFloat(body.amountUSD);
-                let nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
-                let noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                let noPagado = 0;
+                let nuevoSaldo = 0;
+                let sinPagar = 0;
+                if (data2[0].notPayed > 0) {
+                   sinPagar = parseFloat(data2[0].notPayed) - parseFloat(body.amountUSD);
+                } 
+                else{
+                   noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                   nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+                   sinPagar = parseFloat(data2[0].notPayed);
+                }
+
+
+
                 body.idBill = data.id;
 
                 SellerF.single({
@@ -284,7 +305,7 @@ async function create(req, res) {
 
                     Promise.all([
                       SellerF.up({ commissionBS: comision }, { where: { id: data.idSeller } }),
-                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado }, { where: { idBill: data.id } }),
+                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado,notPayed: sinPagar }, { where: { idBill: data.id } }),
                       BillFunctions.up({ overPaidBS: body.overPaidBS }, { where: { id: data.id } }),
                       Payment.create(body)
                     ])
@@ -305,7 +326,7 @@ async function create(req, res) {
 
                     Promise.all([
                       SellerF.up({ commissionUSD: comision }, { where: { id: data.idSeller } }),
-                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado }, { where: { idBill: data.id } }),
+                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado, notPayed: sinPagar }, { where: { idBill: data.id } }),
                       BillFunctions.up({ overPaidBS: body.overPaidBS }, { where: { id: data.id } }),
                       Payment.create(body)
                     ])

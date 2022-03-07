@@ -49,11 +49,12 @@ async function deleteSeller(req, res) {
 
     const id = req.params.id;
 
-    Seller.deleteS({ where: { id: id } });
+    const eliminado = await Seller.single({ where: { id } });
+    await Seller.deleteS({ where: { id } });
 
     res.send({
       ok: true,
-      res: `${id} ha sido eliminado`
+      res: `${eliminado.name} ha sido eliminado`
     });
 
 

@@ -4,10 +4,6 @@ const app = express();
 const db = require('./src/database/controller/index');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const XLSX = require('xlsx');
-const fs = require('fs');
-const readXlsxFile = require('read-excel-file/node');
-const multer = require('multer')
 
 // Configuración del servidor
 app.use(cors())

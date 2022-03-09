@@ -8,34 +8,36 @@ const readXlsxFile = require('read-excel-file/node')
 // import readXlsxFile from 'read-excel-file';
 // const upload = multer()
 
-  
+
 // Rutas...
 
 
 // File path.
 
-  
+
 
 
 const storage = multer.diskStorage({
-    destination:  (req, file, cb)=> {
-      cb(null, "./src/bill/controllers/files")
-    },
-    filename:  (req, file, cb)=> {
-      let day =new Date;
-      cb(null, file.originalname)
-    }
-  })
-  
-  const upload = multer({ storage: storage })
+  destination: (req, file, cb) => {
+    cb(null, "./src/bill/controllers/files")
+  },
+  filename: (req, file, cb) => {
+    let day = new Date;
+    cb(null, file.originalname)
+  }
+})
+
+const upload = multer({ storage: storage })
 
 Router.post('/file', upload.single('file'), (req, res) => {
+
+  try {
+
+
     
-
-
     filePath = './src/bill/controllers/files/tabla.xlsx'
 
-    
+
     readXlsxFile(filePath).then((rows) => {
 
       rows.shift();
@@ -49,7 +51,7 @@ Router.post('/file', upload.single('file'), (req, res) => {
         body.billDate = row[1];
         body.dispatchDate = row[2];
         body.expirationDate = row[3];
-        body.client  = row[4];
+        body.client = row[4];
         body.rif = row[5];
         body.amountUSD = row[6];
         body.amountBS = row[7];
@@ -65,14 +67,18 @@ Router.post('/file', upload.single('file'), (req, res) => {
       })
 
 
-    
-      })
 
-  
-      res.send("Enviada");
+    })
 
-   
-  })
+
+    res.send("Enviada");
+  } catch (error) {
+    res.status(400).send({ error: e.message })
+  }
+
+
+
+})
 
 
 

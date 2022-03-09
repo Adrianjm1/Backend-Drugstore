@@ -206,7 +206,7 @@ async function getPaid(req, res) {
             [Op.gt]: 0
           },
           notPayed: {
-            [Op.eq]: 0
+            [Op.lte]: 0
           },
           unPaid: {
             [Op.eq]: 0

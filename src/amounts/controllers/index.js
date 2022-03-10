@@ -1,5 +1,6 @@
 const Amounts = require('../domain');
 const BillF = require('../../bill/domain');
+const { now } = require('sequelize/dist/lib/utils');
 
 async function getAll(req, res) {
   try {
@@ -50,32 +51,21 @@ async function make(req, res) {
 }
 
 
-// async function updateToDate(req, res) {
-//   try {
-//     const data = await Amounts.all();
-//     res.send(data)
-//   } catch (e) {
-//     res.status(400).send({ error: e.message })
-//   }
-// }
-
-
 
 async function updateToDate(req, res) {
   try {
 
     const dataBIll = await BillF.all();
     let amountsData = await Amounts.all();
-    let today = new Date();
+    let today = new Date(now());
 
     dataBIll.map(data => {
+
       if (data.id) {
 
-        // console.log(today.getFullYear() + ' y ' + (data.expirationDate).getFullYear());
+        let expiration = new Date(data.expirationDate);
 
-        if (today.toLocaleDateString() > data.expirationDate.toLocaleDateString()  || today.getFullYear() > data.expirationDate.getFullYear()) {
-
-    
+        if (today > expiration || today.getFullYear() > data.expirationDate.getFullYear()) {
 
           let idBill = data.id;
 
@@ -83,10 +73,10 @@ async function updateToDate(req, res) {
 
             if (amountD.idBill === data.id) {
 
-              if (amountD.notPayed ==0 ) {
+              if (amountD.notPayed == 0) {
                 let notPayed = amountD.unPaid;
                 let unPaid = 0;
-                let updated = Amounts.up({ notPayed, unPaid }, { where: { idBill } });
+                Amounts.up({ notPayed, unPaid }, { where: { idBill } });
 
               }
             }
@@ -94,18 +84,14 @@ async function updateToDate(req, res) {
           })
 
 
-
-          // console.log("Se actualizo la info de la factura " + idBill);
-        } else {
-          // console.log(`factura ${data.id} en fecha se compararon ${today.toLocaleDateString()} y ${data.expirationDate.toLocaleDateString()}`);
         }
 
-        // res.send( fecha.toLocaleDateString())
       }
     })
 
 
-    res.send({ message: "dios" })
+    res.send({ message: "dios" });
+
   } catch (e) {
     res.status(400).send({ error: e.message })
   }
@@ -118,5 +104,5 @@ module.exports = {
   getOne,
   make,
   updateToDate,
-  getAmount
+  getAmount,
 }

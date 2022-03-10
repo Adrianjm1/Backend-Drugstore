@@ -10,8 +10,6 @@ const multer = require('multer');
 
 
 
-// const { Fac } = require('../validations');
-
 
 
 async function getAll(req, res) {

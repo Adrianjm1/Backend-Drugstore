@@ -400,6 +400,27 @@ async function getPaymentsByBill(req, res) {
 }
 
 
+async function deletePay(req, res) {
+  try {
+
+    const id = req.params.id;
+
+    const eliminado = await Seller.Payment({ where: { id } });
+    await Seller.deleteS({ where: { id } });
+
+    res.send({
+      ok: true,
+      res: `${eliminado.name} ha sido eliminado`
+    });
+
+
+  } catch (e) {
+    res.status(400).send({ error: e.message })
+  }
+}
+
+
+
 
 module.exports = {
   getAll,
@@ -407,5 +428,6 @@ module.exports = {
   create,
   getPaymentsByDay,
   getPaymentsByMonth,
-  getPaymentsByBill
+  getPaymentsByBill,
+  deletePay
 }

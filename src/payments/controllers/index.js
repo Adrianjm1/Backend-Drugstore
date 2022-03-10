@@ -4,6 +4,7 @@ const BillFunctions = require('../../bill/domain/index');
 const AmountsFunctions = require('../../amounts/domain/index');
 const SellerF = require('../../seller/domain/index');
 
+
 async function getAll(req, res) {
   try {
     const data = await Payment.all();
@@ -402,15 +403,40 @@ async function getPaymentsByBill(req, res) {
 
 async function deletePay(req, res) {
   try {
-
+    let today = new Date();
     const id = req.params.id;
 
-    const eliminado = await Seller.Payment({ where: { id } });
-    await Seller.deleteS({ where: { id } });
+    const dataPayment = await Payment.single({ where: { id } });
+    const  dataBill = await BillFunctions.single({where: {id: dataPayment.idBill }});
+    const dataAmount = await AmountsFunctions.single({where: {idBill: dataBill.id }}); //IMPORTAR
+
+
+    // console.log(dataAmount);
+
+    let expiration = new Date(dataBill.expirationDate);
+
+    if (today > expiration || today.getFullYear() > dataBill.expirationDate.getFullYear()) {
+
+
+            let notPayed = parseFloat(dataAmount.notPayed) +  parseFloat(dataPayment.amountUSD);
+            let paid = dataAmount.paid - dataPayment.amountUSD;
+            AmountsFunctions.up({ notPayed:notPayed, paid: paid }, { where: { idBill: dataBill.id } });
+            console.log(notPayed );
+
+    }
+    else{
+
+      let unPaid = parseFloat(dataAmount.unPaid) +  parseFloat(dataPayment.amountUSD);
+      let paid = dataAmount.paid - dataPayment.amountUSD;
+      AmountsFunctions.up({ unPaid:unPaid ,  paid: paid }, { where: { idBill: dataBill.id } });
+      console.log(unPaid );
+    }
+
+
+    await Payment.deleteP({ where: { id } });
 
     res.send({
       ok: true,
-      res: `${eliminado.name} ha sido eliminado`
     });
 
 

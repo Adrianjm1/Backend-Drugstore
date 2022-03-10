@@ -7,6 +7,7 @@ Router.get('/day', validToken, Controller.getPaymentsByDay);
 Router.get('/month', validToken, Controller.getPaymentsByMonth);
 Router.get('/bill', validToken, Controller.getPaymentsByBill);
 Router.post('/create', validToken, Controller.create);
+Router.delete('/delete/:id',  Controller.deletePay);
 
 module.exports = Router
 

@@ -201,7 +201,7 @@ async function getPaid(req, res) {
             [Op.lte]: 0
           },
           unPaid: {
-            [Op.eq]: 0 // // unPaid == 0
+            [Op.lte]: 0 // // unPaid == 0
           },
         }
       }

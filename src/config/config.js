@@ -1,5 +1,6 @@
-// process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
+process.env.NODE_ENV = process.env.NODE_ENV || 'dev';
 
+if (process.env.NODE_ENV == 'dev') {
 
     process.env.DBNAME = 'drogueri_enmanuelle';
     process.env.DBUSER = 'drogueri_admin';
@@ -8,3 +9,4 @@
     process.env.SEED = 'token-SEED';
     process.env.CADUCIDAD_TOKEN = '5h';
 
+}

@@ -49,7 +49,7 @@ Router.post('/file', upload.single('file'), (req, res) => {
 
           if (datos.id == body.id) {
             count++
-            console.log('hay data duplicada ' + datos.id + ' ' + body.id);
+            // console.log('hay data duplicada ' + datos.id + ' ' + body.id);
             blacklist.push(datos.id);
             return;
           }
@@ -90,7 +90,7 @@ Router.post('/file', upload.single('file'), (req, res) => {
         }
 
         if (blacklist.includes(body.id)) {
-          console.log(` factura ${body.id} duplicada`);
+          // console.log(` factura ${body.id} duplicada`);
         }
         else {
 

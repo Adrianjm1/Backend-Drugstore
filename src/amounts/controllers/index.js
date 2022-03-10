@@ -57,7 +57,7 @@ async function updateToDate(req, res) {
 
     const dataBIll = await BillF.all();
     let amountsData = await Amounts.all();
-    let today = new Date(now());
+    let today = new Date();
 
     dataBIll.map(data => {
 

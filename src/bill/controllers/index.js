@@ -3,13 +3,7 @@ const Seller = require('../../seller/domain/model');
 const AmountF = require('../../amounts/domain');
 const Amounts = require('../../amounts/domain/model');
 const { Op } = require("sequelize");
-var bodyParser = require('body-parser');
-var path = require('path');     //used for file path
-var fs = require('fs');       //File System - for file manipulation
-const multer = require('multer');
-
-
-
+var path = require('path');     //used for file paths
 
 
 async function getAll(req, res) {
@@ -178,10 +172,10 @@ async function getUnPaid(req, res) {
         model: Amounts,
         where: {
           unPaid: {
-            [Op.gt]: 0
+            [Op.gt]: 0 // unPaid > 0
           },
           notPayed: {
-            [Op.eq]: 0
+            [Op.eq]: 0 // notPayed == 0
           }
         }
       }
@@ -201,13 +195,13 @@ async function getPaid(req, res) {
         model: Amounts,
         where: {
           paid: {
-            [Op.gt]: 0
+            [Op.gt]: 0 // paid > 0
           },
           notPayed: {
             [Op.lte]: 0
           },
           unPaid: {
-            [Op.eq]: 0
+            [Op.eq]: 0 // // unPaid == 0
           },
         }
       }
@@ -242,7 +236,7 @@ async function getNotPayed(req, res) {
         model: Amounts,
         where: {
           notPayed: {
-            [Op.gt]: 0
+            [Op.gt]: 0 // notPayed > 0
           }
         }
       }

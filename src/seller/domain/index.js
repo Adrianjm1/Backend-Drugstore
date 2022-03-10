@@ -17,10 +17,14 @@ function create(attr){
   return Seller.create(attr)
 }
 
+function deleteS(attr){
+  return Seller.destroy(attr)
+}
 
 module.exports = {
   single,
   all,
   create,
-  up
+  up,
+  deleteS
 }

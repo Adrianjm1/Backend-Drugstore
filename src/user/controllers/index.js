@@ -18,7 +18,7 @@ async function login(req, res) {
       if (!data) {
         return res.send({
           ok: false,
-          resp: '(Usuario) o contraseña incorrectos'    //Se colocan los parentesis de muestra, pero se deben quitar
+          resp: 'Usuario o contraseña incorrectos'    //Se colocan los parentesis de muestra, pero se deben quitar
         })
       }
 
@@ -27,13 +27,13 @@ async function login(req, res) {
       if (passwordHash !== data.password) {
         return res.send({
           ok: false,
-          resp: 'Usuario o (contraseña) incorrectos'      //Se colocan los parentesis de muestra, pero se deben quitar
+          resp: 'Usuario o contraseña incorrectos'      //Se colocan los parentesis de muestra, pero se deben quitar
         })
       }
 
       let token = jwt.sign({
         usuario: data
-      }, 'token-SEED', { expiresIn: '5h' });
+      }, process.env.SEED, { expiresIn: process.env.CADUCIDAD_TOKEN });
 
       data.password = null;
 

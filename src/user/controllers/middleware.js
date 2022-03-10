@@ -4,7 +4,7 @@ let validToken = (req, res, next) => {
 
     let token = req.get('token');
 
-    jwt.verify(token, 'token-SEED', (err, decoded) => {
+    jwt.verify(token, process.env.SEED, (err, decoded) => {
 
         if (err) {
             return res.status(401).json({
@@ -24,7 +24,7 @@ let checkToken = (req, res, next) => {
 
     let token = req.get('token');
 
-    jwt.verify(token, 'token-SEED', (err, decoded) => {
+    jwt.verify(token, process.env.SEED, (err, decoded) => {
 
         if (err) {
             return res.send({

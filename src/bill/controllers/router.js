@@ -8,48 +8,65 @@ const readXlsxFile = require('read-excel-file/node')
 // import readXlsxFile from 'read-excel-file';
 // const upload = multer()
 
-  
+
 // Rutas...
 
 
 // File path.
 
-  
 
 
 const storage = multer.diskStorage({
-    destination:  (req, file, cb)=> {
-      cb(null, "./src/bill/controllers/files")
-    },
-    filename:  (req, file, cb)=> {
-      let day =new Date;
-      cb(null, file.originalname)
-    }
-  })
-  
-  const upload = multer({ storage: storage })
+  destination: (req, file, cb) => {
+    cb(null, "./src/bill/controllers/files")
+  },
+  filename: (req, file, cb) => {
+    let day = new Date;
+    cb(null, file.originalname)
+  }
+})
+
+const upload = multer({ storage: storage })
+
+
 
 Router.post('/file', upload.single('file'), (req, res) => {
-    
 
+  filePath = './src/bill/controllers/files/tabla.xlsx'
 
-    filePath = './src/bill/controllers/files/tabla.xlsx'
+  let blacklist = [];
+  readXlsxFile(filePath).then((rows) => {
 
-    
-    readXlsxFile(filePath).then((rows) => {
+    rows.shift();
+    const verdadero = Bill.all().then(data => {
+      data.map(datos => {
 
-      rows.shift();
+        rows.map(row => {
+          let count = 0;
+          let body = {};
 
+          body.id = row[0];
+
+          if (datos.id == body.id) {
+            count++
+            // console.log('hay data duplicada ' + datos.id + ' ' + body.id);
+            blacklist.push(datos.id);
+            return;
+          }
+
+        })
+
+      })
 
       rows.map(row => {
-        let body = {
 
-        };
+        let body = {};
+
         body.id = row[0];
         body.billDate = row[1];
         body.dispatchDate = row[2];
         body.expirationDate = row[3];
-        body.client  = row[4];
+        body.client = row[4];
         body.rif = row[5];
         body.amountUSD = row[6];
         body.amountBS = row[7];
@@ -60,19 +77,34 @@ Router.post('/file', upload.single('file'), (req, res) => {
         body.createdAt = row[12];
         body.updatedAt = row[13];
         body.idSeller = row[14];
-        console.log(body);
-        Bill.create(body)
+
+
+        if (body.city == '' || body.city == null) {
+          body.city = '-'
+        }
+        if (body.location == '' || body.location == null) {
+          body.location = '-'
+        }
+        if (body.rif == '' || body.rif == null) {
+          body.rif = '-'
+        }
+
+        if (blacklist.includes(body.id)) {
+          // console.log(` factura ${body.id} duplicada`);
+        }
+        else {
+
+          Bill.create(body)
+        }
       })
-
-
-    
-      })
-
-  
-      res.send("Enviada");
-
-   
+    });
   })
+
+
+  res.send("Enviada");
+
+
+})
 
 
 

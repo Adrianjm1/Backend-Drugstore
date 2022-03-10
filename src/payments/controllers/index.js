@@ -4,6 +4,7 @@ const BillFunctions = require('../../bill/domain/index');
 const AmountsFunctions = require('../../amounts/domain/index');
 const SellerF = require('../../seller/domain/index');
 
+
 async function getAll(req, res) {
   try {
     const data = await Payment.all();
@@ -165,8 +166,6 @@ async function create(req, res) {
   try {
     const body = req.body;
 
-    console.log(body.overPaidBS);
-
     BillFunctions.single({
       attributes: ['id', 'amountUSD', 'idSeller', 'sellersComission'],
       where: { id: body.id }
@@ -196,11 +195,20 @@ async function create(req, res) {
               attributes: ['id', 'paid', 'unPaid', 'notPayed'],
               where: { idBill: data.id }
             })
-              .then(data2 => {
+              .then(data2 => {                
 
                 let pagado = parseFloat(data2[0].paid) + parseFloat(body.amountUSD);
-                let noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
-                let nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+                let noPagado = 0;
+                let nuevoSaldo = 0;
+                let sinPagar = 0;
+                if (data2[0].notPayed > 0) {
+                   sinPagar = parseFloat(data2[0].notPayed) - parseFloat(body.amountUSD);
+                } 
+                else{
+                   noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                   nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+                   sinPagar = parseFloat(data2[0].notPayed);
+                }
                 body.idBill = data.id;
 
                 SellerF.single({
@@ -209,36 +217,49 @@ async function create(req, res) {
 
 
                   if (body.paymentUSD == false) {
-                    let comisionAux = (body.amountUSD * (data.sellersComission / 100));
-                    let comision = parseFloat(comisionAux) + parseFloat(sellerData.commissionUSD);
-                    SellerF.up({ commissionUSD: comision }, { where: { id: data.idSeller } });
-                  } else {
-
 
                     let comisionAux = ((body.amountUSD * body.exchangeRate) * (data.sellersComission / 100));
+                    let comision = parseFloat(comisionAux) + parseFloat(sellerData.commissionUSD);
+
+                    Promise.all([
+                      SellerF.up({ commissionBS: comision }, { where: { id: data.idSeller } }),
+                      BillFunctions.up({ amountUSD: nuevoSaldo }, { where: { id: data.id } }),
+                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado, notPayed: sinPagar }, { where: { idBill: data.id } }),
+                      Payment.create(body)
+                    ])
+                      .then(resp => {
+                        res.send(resp);
+
+                      })
+                      .catch(e => {
+                        res.status(400).send({ error4: e.message });
+                        console.log(e);
+
+                      })
+
+                  } else {
+
+                    let comisionAux = (body.amountUSD * (data.sellersComission / 100));
                     let comision = parseFloat(comisionAux) + parseFloat(sellerData.commissionBS);
-                    SellerF.up({ comisionBs: comision }, { where: { id: data.idSeller } });
 
+                    Promise.all([
+                      SellerF.up({ commissionUSD: comision }, { where: { id: data.idSeller } }),
+                      BillFunctions.up({ amountUSD: nuevoSaldo }, { where: { id: data.id } }),
+                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado, notPayed: sinPagar }, { where: { idBill: data.id } }),
+                      Payment.create(body)
+                    ])
+                      .then(resp => {
+                        res.send(resp);
 
+                      })
+                      .catch(e => {
+                        res.status(400).send({ error4: e.message });
+                        console.log(e);
+
+                      })
                   }
 
                 })
-
-
-                Promise.all([
-                  BillFunctions.up({amountUSD: nuevoSaldo}, {where: {id: data.id}}),
-                  AmountsFunctions.up({ paid: pagado, unPaid: noPagado }, { where: { idBill: data.id } }),
-                  Payment.create(body)
-                ])
-                  .then(resp => {
-                    res.send(resp);
-
-                  })
-                  .catch(e => {
-                    res.status(400).send({ error4: e.message });
-                    console.log(e);
-
-                  })
 
               })
               .catch(err => {
@@ -257,8 +278,20 @@ async function create(req, res) {
               .then(data2 => {
 
                 let pagado = parseFloat(data2[0].paid) + parseFloat(body.amountUSD);
-                let nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
-                let noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                let noPagado = 0;
+                let nuevoSaldo = 0;
+                let sinPagar = 0;
+                if (data2[0].notPayed > 0) {
+                   sinPagar = parseFloat(data2[0].notPayed) - parseFloat(body.amountUSD);
+                } 
+                else{
+                   noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                   nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+                   sinPagar = parseFloat(data2[0].notPayed);
+                }
+
+
+
                 body.idBill = data.id;
 
                 SellerF.single({
@@ -268,31 +301,46 @@ async function create(req, res) {
 
                   if (body.paymentUSD == false) {
 
-                    let comisionAux = (body.amountUSD * (data.sellersComission / 100));
+                    let comisionAux = ((body.amountUSD * body.exchangeRate) * (data.sellersComission / 100));
                     let comision = parseFloat(comisionAux) + parseFloat(sellerData.commissionUSD);
-                    SellerF.up({ commissionUSD: comision }, { where: { id: data.idSeller } });
+
+                    Promise.all([
+                      SellerF.up({ commissionBS: comision }, { where: { id: data.idSeller } }),
+                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado,notPayed: sinPagar }, { where: { idBill: data.id } }),
+                      BillFunctions.up({ overPaidBS: body.overPaidBS }, { where: { id: data.id } }),
+                      Payment.create(body)
+                    ])
+                      .then(resp => {
+                        res.send(resp);
+
+                      })
+                      .catch(e => {
+                        res.status(400).send({ error4: e.message });
+
+                      })
+
 
                   } else {
 
-                    let comisionAux = ((body.amountUSD * body.exchangeRate) * (data.sellersComission / 100));
+                    let comisionAux = (body.amountUSD * (data.sellersComission / 100));
                     let comision = parseFloat(comisionAux) + parseFloat(sellerData.commissionBS);
-                    SellerF.up({ comisionBs: comision }, { where: { id: data.idSeller } });
+
+                    Promise.all([
+                      SellerF.up({ commissionUSD: comision }, { where: { id: data.idSeller } }),
+                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado, notPayed: sinPagar }, { where: { idBill: data.id } }),
+                      BillFunctions.up({ overPaidBS: body.overPaidBS }, { where: { id: data.id } }),
+                      Payment.create(body)
+                    ])
+                      .then(resp => {
+                        res.send(resp);
+
+                      })
+                      .catch(e => {
+                        res.status(400).send({ error4: e.message });
+
+                      })
+
                   }
-
-                  Promise.all([
-                    AmountsFunctions.up({ paid: pagado, unPaid: noPagado }, { where: { idBill: data.id } }),
-                    BillFunctions.up({ overPaidBS: body.overPaidBS }, { where: { id: data.id } }),
-                    Payment.create(body)
-                  ])
-                    .then(resp => {
-                      res.send(resp);
-
-                    })
-                    .catch(e => {
-                      res.status(400).send({ error4: e.message });
-
-                    })
-
 
                 })
 
@@ -353,6 +401,52 @@ async function getPaymentsByBill(req, res) {
 }
 
 
+async function deletePay(req, res) {
+  try {
+    let today = new Date();
+    const id = req.params.id;
+
+    const dataPayment = await Payment.single({ where: { id } });
+    const  dataBill = await BillFunctions.single({where: {id: dataPayment.idBill }});
+    const dataAmount = await AmountsFunctions.single({where: {idBill: dataBill.id }}); //IMPORTAR
+
+
+    // console.log(dataAmount);
+
+    let expiration = new Date(dataBill.expirationDate);
+
+    if (today > expiration || today.getFullYear() > dataBill.expirationDate.getFullYear()) {
+
+
+            let notPayed = parseFloat(dataAmount.notPayed) +  parseFloat(dataPayment.amountUSD);
+            let paid = dataAmount.paid - dataPayment.amountUSD;
+            AmountsFunctions.up({ notPayed:notPayed, paid: paid }, { where: { idBill: dataBill.id } });
+            console.log(notPayed );
+
+    }
+    else{
+
+      let unPaid = parseFloat(dataAmount.unPaid) +  parseFloat(dataPayment.amountUSD);
+      let paid = dataAmount.paid - dataPayment.amountUSD;
+      AmountsFunctions.up({ unPaid:unPaid ,  paid: paid }, { where: { idBill: dataBill.id } });
+      console.log(unPaid );
+    }
+
+
+    await Payment.deleteP({ where: { id } });
+
+    res.send({
+      ok: true,
+    });
+
+
+  } catch (e) {
+    res.status(400).send({ error: e.message })
+  }
+}
+
+
+
 
 module.exports = {
   getAll,
@@ -360,5 +454,6 @@ module.exports = {
   create,
   getPaymentsByDay,
   getPaymentsByMonth,
-  getPaymentsByBill
+  getPaymentsByBill,
+  deletePay
 }

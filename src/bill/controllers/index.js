@@ -3,15 +3,7 @@ const Seller = require('../../seller/domain/model');
 const AmountF = require('../../amounts/domain');
 const Amounts = require('../../amounts/domain/model');
 const { Op } = require("sequelize");
-var bodyParser = require('body-parser');
-var path = require('path');     //used for file path
-var fs = require('fs');       //File System - for file manipulation
-const multer = require('multer');
-
-
-
-// const { Fac } = require('../validations');
-
+var path = require('path');     //used for file paths
 
 
 async function getAll(req, res) {
@@ -63,7 +55,7 @@ async function getOne(req, res) {
   try {
     const id = req.params.id;
     const data = await Bill.single({
-      include: [{ model: Seller, attributes: ['name', 'lastname'] }, { model: Amounts }],
+      include: [{ model: Seller, attributes: ['name', 'lastname', 'id'] }, { model: Amounts }],
       where: { id }
     });
     res.send(data)
@@ -180,10 +172,10 @@ async function getUnPaid(req, res) {
         model: Amounts,
         where: {
           unPaid: {
-            [Op.gt]: 0
+            [Op.gt]: 0 // unPaid > 0
           },
           notPayed: {
-            [Op.eq]: 0
+            [Op.eq]: 0 // notPayed == 0
           }
         }
       }
@@ -203,27 +195,17 @@ async function getPaid(req, res) {
         model: Amounts,
         where: {
           paid: {
-            [Op.gt]: 0
+            [Op.gt]: 0 // paid > 0
           },
           notPayed: {
-            [Op.gte]: 0
+            [Op.lte]: 0
           },
           unPaid: {
-            [Op.lte]: 0
+            [Op.lte]: 0 // // unPaid == 0
           },
         }
       }
     });
-
-    /*     paid: {
-          [Op.gt]: 0
-        },
-        notPayed: {
-          [Op.gt]: 0
-        },
-        unPaid: {
-          [Op.lt]: 0
-        }, */
 
     let sumUSD = 0;
     let sumBS = 0;
@@ -254,10 +236,7 @@ async function getNotPayed(req, res) {
         model: Amounts,
         where: {
           notPayed: {
-            [Op.gt]: 0
-          },
-          unPaid: {
-            [Op.gte]: 0
+            [Op.gt]: 0 // notPayed > 0
           }
         }
       }

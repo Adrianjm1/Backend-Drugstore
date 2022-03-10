@@ -44,10 +44,31 @@ async function make(req, res){
   }
 }
 
+async function deleteSeller(req, res) {
+  try {
+
+    const id = req.params.id;
+
+    const eliminado = await Seller.single({ where: { id } });
+    await Seller.deleteS({ where: { id } });
+
+    res.send({
+      ok: true,
+      res: `${eliminado.name} ha sido eliminado`
+    });
+
+
+  } catch (e) {
+    res.status(400).send({ error: e.message })
+  }
+}
+
+
 
 module.exports = {
   getAll,
   getOne,
   make,
-  getNotPayed
+  getNotPayed,
+  deleteSeller
 }

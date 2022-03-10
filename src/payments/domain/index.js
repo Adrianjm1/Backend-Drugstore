@@ -13,9 +13,14 @@ function create(attr){
   return Payment.create(attr)
 }
 
+function deleteP(attr){
+  return Payment.destroy(attr)
+}
+
 
 module.exports = {
   single,
   all,
-  create
+  create,
+  deleteP
 }

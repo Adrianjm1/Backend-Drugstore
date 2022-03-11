@@ -165,6 +165,7 @@ async function create(req, res) {
 
   try {
     const body = req.body;
+    body.bank = body.bank.toUpperCase()
 
     BillFunctions.single({
       attributes: ['id', 'amountUSD', 'idSeller', 'sellersComission'],

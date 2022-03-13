@@ -447,6 +447,15 @@ async function deletePay(req, res) {
 }
 
 
+async function deleteAllbyId(req, res) {
+  try {
+    const id = req.params.id
+    const data = await Payment.deleteP({ where: { id } });
+    res.send(`Facturas borrada con exito`)
+  } catch (e) {
+    res.status(400).send({ error: e.message })
+  }
+}
 
 
 module.exports = {
@@ -456,5 +465,6 @@ module.exports = {
   getPaymentsByDay,
   getPaymentsByMonth,
   getPaymentsByBill,
-  deletePay
+  deletePay,
+  deleteAllbyId
 }

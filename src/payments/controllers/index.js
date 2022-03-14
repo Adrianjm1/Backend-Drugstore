@@ -3,6 +3,7 @@ const Bill = require('../../bill/domain/model');
 const BillFunctions = require('../../bill/domain/index');
 const AmountsFunctions = require('../../amounts/domain/index');
 const SellerF = require('../../seller/domain/index');
+const Seller = require('../../seller/domain/model');
 
 
 async function getAll(req, res) {
@@ -21,7 +22,7 @@ async function getPaymentsByDay(req, res) {
 
     Payment.all({
       attributes: ['id', 'amountUSD', 'referenceNumber', 'exchangeRate', 'bank', 'date', 'paymentUSD', 'idBill'],
-      include: [{ model: Bill, attributes: ['client', 'rif'] }],
+      include: [{ model: Bill, attributes: ['client', 'rif', 'expirationDate', 'id' ], include:[{model: Seller}] }],
       where: { date: day },
       order: [
         ['id', 'DESC'],
@@ -85,7 +86,7 @@ async function getPaymentsByMonth(req, res) {
 
     Payment.all({
       attributes: ['id', 'amountUSD', 'referenceNumber', 'exchangeRate', 'bank', 'date', 'paymentUSD', 'idBill'],
-      include: [{ model: Bill, attributes: ['client', 'rif'] }],
+      include: [{ model: Bill, attributes: ['client', 'rif', 'expirationDate', 'id' ], include:[{model: Seller}] }],
       order: [
         ['id', 'DESC'],
       ]

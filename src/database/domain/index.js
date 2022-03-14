@@ -1,5 +1,3 @@
-
-
 const { Sequelize } = require('sequelize');
 
 // Dirección de la DB.

@@ -10,7 +10,7 @@ Payment.init({
     allowNull: false
   },
   amountUSD: {
-    type: DataTypes.DECIMAL(8,2),
+    type: DataTypes.DECIMAL(8,30),
     allowNull: false
   },
   exchangeRate: {

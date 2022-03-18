@@ -3,6 +3,7 @@ const Bill = require('../../bill/domain/model');
 const BillFunctions = require('../../bill/domain/index');
 const AmountsFunctions = require('../../amounts/domain/index');
 const SellerF = require('../../seller/domain/index');
+const Seller = require('../../seller/domain/model');
 
 
 async function getAll(req, res) {
@@ -21,7 +22,7 @@ async function getPaymentsByDay(req, res) {
 
     Payment.all({
       attributes: ['id', 'amountUSD', 'referenceNumber', 'exchangeRate', 'bank', 'date', 'paymentUSD', 'idBill'],
-      include: [{ model: Bill, attributes: ['client', 'rif'] }],
+      include: [{ model: Bill, attributes: ['client', 'rif', 'expirationDate', 'id' ], include:[{model: Seller}] }],
       where: { date: day },
       order: [
         ['id', 'DESC'],
@@ -85,7 +86,7 @@ async function getPaymentsByMonth(req, res) {
 
     Payment.all({
       attributes: ['id', 'amountUSD', 'referenceNumber', 'exchangeRate', 'bank', 'date', 'paymentUSD', 'idBill'],
-      include: [{ model: Bill, attributes: ['client', 'rif'] }],
+      include: [{ model: Bill, attributes: ['client', 'rif', 'expirationDate', 'id' ], include:[{model: Seller}] }],
       order: [
         ['id', 'DESC'],
       ]
@@ -165,6 +166,7 @@ async function create(req, res) {
 
   try {
     const body = req.body;
+    body.bank = body.bank.toUpperCase()
 
     BillFunctions.single({
       attributes: ['id', 'amountUSD', 'idSeller', 'sellersComission'],
@@ -446,6 +448,15 @@ async function deletePay(req, res) {
 }
 
 
+async function deleteAllbyId(req, res) {
+  try {
+    const id = req.params.id
+    const data = await Payment.deleteP({ where: { id } });
+    res.send(`Facturas borrada con exito`)
+  } catch (e) {
+    res.status(400).send({ error: e.message })
+  }
+}
 
 
 module.exports = {
@@ -455,5 +466,6 @@ module.exports = {
   getPaymentsByDay,
   getPaymentsByMonth,
   getPaymentsByBill,
-  deletePay
+  deletePay,
+  deleteAllbyId
 }

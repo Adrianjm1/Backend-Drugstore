@@ -1,4 +1,6 @@
 const Amounts = require('../../amounts/domain/model');
+const BillFunctions = require('../../bill/domain/index');
+const AmountsFunctions = require('../../amounts/domain/index');
 const Seller = require('../domain');
 const { Op } = require("sequelize");
 
@@ -50,7 +52,12 @@ async function deleteSeller(req, res) {
     const id = req.params.id;
 
     const eliminado = await Seller.single({ where: { id } });
-    await Seller.deleteS({ where: { id } });
+
+    Promise.all([
+      AmountsFunctions.deleteA({ where: { idSeller: id } }),
+      BillFunctions.deleteB({ where: { idSeller: id } }),
+      Seller.deleteS({ where: { id } })
+    ])
 
     res.send({
       ok: true,

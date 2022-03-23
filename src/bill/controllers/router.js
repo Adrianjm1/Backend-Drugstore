@@ -101,7 +101,7 @@ Router.get('/correct', Controller.correcting);
 
 
 Router.get('/unpaid', Controller.getUnPaid);
-Router.get('/notpayed', validToken, Controller.getNotPayed);
+Router.get('/notpayed',  Controller.getNotPayed);
 Router.get('/paid', Controller.getPaid);
 Router.get('/seller/:id', validToken, Controller.getBillBySeller);
 Router.get('/:id', validToken, Controller.getOne);

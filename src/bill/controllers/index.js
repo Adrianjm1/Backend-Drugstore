@@ -3,7 +3,7 @@ const Seller = require('../../seller/domain/model');
 const AmountF = require('../../amounts/domain');
 const PaymentsF = require('../../payments/domain');
 const Amounts = require('../../amounts/domain/model');
-const { Op } = require("sequelize");
+const { Op, fn, col } = require("sequelize");
 var path = require('path');     //used for file paths
 
 
@@ -159,8 +159,8 @@ async function correcting(req, res) {
 async function deleteBill(req, res) {
   try {
     const id = req.params.id
-    const dataAmounts = await AmountF.deleteA({where:{idBill: id}})
-    const dataPayments = await PaymentsF.deleteP({where:{idBill: id}})
+    const dataAmounts = await AmountF.deleteA({ where: { idBill: id } })
+    const dataPayments = await PaymentsF.deleteP({ where: { idBill: id } })
     const data = await Bill.deleteB({ where: { id } });
     res.send(`${data} ${dataAmounts} ${dataPayments} Facturas borrada con exito`)
   } catch (e) {
@@ -184,7 +184,29 @@ async function getUnPaid(req, res) {
       }
     });
 
-    res.send(data)
+    const sumas = await Bill.all({
+
+      attributes: [
+        [fn('sum', col('amountUSD')), 'sumUSD'],
+        [fn('sum', col('amountBS')), 'sumBS']
+      ],
+      include: {
+        model: Amounts,
+        where: {
+          unPaid: {
+            [Op.gt]: 0 // unPaid > 0
+          },
+          notPayed: {
+            [Op.eq]: 0 // notPayed == 0
+          }
+        }
+      }
+
+    });
+
+
+
+    res.send({data, sumas})
   } catch (e) {
     res.status(400).send({ error: e.message })
   }
@@ -244,7 +266,24 @@ async function getNotPayed(req, res) {
         }
       }
     });
-    res.send(data)
+
+    const sumas = await Bill.all({
+
+      attributes: [
+        [fn('sum', col('amountUSD')), 'sumUSD'],
+        [fn('sum', col('amountBS')), 'sumBS']
+      ], include: {
+        model: Amounts,
+        where: {
+          notPayed: {
+            [Op.gt]: 0 // notPayed > 0
+          }
+        }
+      }
+
+    });
+
+    res.send({ data, sumas })
   } catch (e) {
     res.status(400).send({ error: e.message })
   }

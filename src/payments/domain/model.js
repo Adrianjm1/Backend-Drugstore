@@ -1,7 +1,7 @@
 const { DataTypes, Model } = require('sequelize');
 const db = require('../../database/domain');
 
-class Payment extends Model {}
+class Payment extends Model { }
 Payment.init({
   id: {
     type: DataTypes.INTEGER.UNSIGNED,
@@ -10,11 +10,11 @@ Payment.init({
     allowNull: false
   },
   amountUSD: {
-    type: DataTypes.DECIMAL(8,2),
+    type: DataTypes.DECIMAL(8, 2),
     allowNull: false
   },
   exchangeRate: {
-    type: DataTypes.DECIMAL(20,3),
+    type: DataTypes.DECIMAL(20, 3),
     defaultValue: 0,
     allowNull: true
   },
@@ -36,6 +36,6 @@ Payment.init({
     allowNull: false
   }
 
-}, {sequelize: db, modelName: 'payment'});
+}, { sequelize: db, modelName: 'payment' });
 
 module.exports = Payment;

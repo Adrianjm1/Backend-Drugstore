@@ -1,6 +1,7 @@
 const Bill = require('../domain');
 const Seller = require('../../seller/domain/model');
 const AmountF = require('../../amounts/domain');
+const PaymentsF = require('../../payments/domain');
 const Amounts = require('../../amounts/domain/model');
 const { Op } = require("sequelize");
 var path = require('path');     //used for file paths
@@ -158,8 +159,10 @@ async function correcting(req, res) {
 async function deleteBill(req, res) {
   try {
     const id = req.params.id
+    const dataAmounts = await AmountF.deleteA({where:{idBill: id}})
+    const dataPayments = await PaymentsF.deleteP({where:{idBill: id}})
     const data = await Bill.deleteB({ where: { id } });
-    res.send(`${data}  Factura borrada con exito`)
+    res.send(`${data} ${dataAmounts} ${dataPayments} Facturas borrada con exito`)
   } catch (e) {
     res.status(400).send({ error: e.message })
   }

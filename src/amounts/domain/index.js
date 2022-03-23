@@ -1,4 +1,3 @@
-const { where } = require('sequelize/dist');
 const Amounts = require('./model');
 
 
@@ -18,10 +17,16 @@ function create(attr){
   return Amounts.create(attr)
 }
 
+function deleteA(attr){
+  return Amounts.destroy(attr)
+}
+
+
 
 module.exports = {
   single,
   all,
   create,
-  up
+  up,
+  deleteA
 }

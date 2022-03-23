@@ -3,17 +3,7 @@ const Controller = require('./index.js');
 const Bill = require('../domain');
 const { validToken } = require('../../user/controllers/middleware');
 const multer = require('multer');
-
 const readXlsxFile = require('read-excel-file/node')
-// import readXlsxFile from 'read-excel-file';
-// const upload = multer()
-
-
-// Rutas...
-
-
-// File path.
-
 
 
 const storage = multer.diskStorage({
@@ -49,7 +39,6 @@ Router.post('/file', upload.single('file'), (req, res) => {
 
           if (datos.id == body.id) {
             count++
-            // console.log('hay data duplicada ' + datos.id + ' ' + body.id);
             blacklist.push(datos.id);
             return;
           }

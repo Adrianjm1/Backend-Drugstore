@@ -41,10 +41,20 @@ async function getBillBySeller(req, res) {
     const idSeller = req.params.id;
     const data = await Bill.all({
       where: { idSeller },
+    });
 
+
+    const sumas = await Bill.all({
+      where: { idSeller },
+      attributes: [
+        [fn('sum', col('amountUSD')), 'sumUSD'],
+        [fn('sum', col('amountBS')), 'sumBS']
+      ],
 
     });
-    res.send(data)
+
+
+    res.send({data, sumas})
   } catch (e) {
     res.status(400).send({ error: e.message })
   }

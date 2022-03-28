@@ -181,7 +181,7 @@ async function deleteBill(req, res) {
 async function getUnPaid(req, res) {
   try {
     const data = await Bill.all({
-      include: {
+      include: [{
         model: Amounts,
         where: {
           unPaid: {
@@ -191,7 +191,10 @@ async function getUnPaid(req, res) {
             [Op.eq]: 0 // notPayed == 0
           }
         }
-      }
+      },
+      {
+        model: Seller,
+      }],
     });
 
     const sumas = await Bill.all({
@@ -226,7 +229,7 @@ async function getUnPaid(req, res) {
 async function getPaid(req, res) {
   try {
     const data = await Bill.all({
-      include: {
+      include: [{
         model: Amounts,
         where: {
           paid: {
@@ -239,7 +242,11 @@ async function getPaid(req, res) {
             [Op.lte]: 0 // // unPaid == 0
           },
         }
+      },{
+        model: Seller,
       }
+    ]
+
     });
 
     let sumUSD = 0;
@@ -267,14 +274,20 @@ async function getPaid(req, res) {
 async function getNotPayed(req, res) {
   try {
     const data = await Bill.all({
-      include: {
+      include: [{
         model: Amounts,
         where: {
           notPayed: {
             [Op.gt]: 0 // notPayed > 0
           }
-        }
+        },
+      },{
+        model: Seller,
       }
+    
+    ]
+
+
     });
 
     const sumas = await Bill.all({

@@ -10,11 +10,11 @@ Payment.init({
     allowNull: false
   },
   amountUSD: {
-    type: DataTypes.DOUBLE(11),
+    type: DataTypes.DOUBLE,
     allowNull: false
   },
   exchangeRate: {
-    type: DataTypes.DECIMAL(20, 3),
+    type: DataTypes.DECIMAL(11, 3),
     defaultValue: 0,
     allowNull: true
   },

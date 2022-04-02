@@ -41,14 +41,37 @@ async function getBillBySeller(req, res) {
     const idSeller = req.params.id;
     const data = await Bill.all({
       where: { idSeller },
+      include: [{
+        model: Amounts,
+        where: {
+          unPaid: {
+            [Op.gte]: 0 // unPaid > 0
+          },
+          notPayed: {
+            [Op.gte]: 0 // notPayed == 0
+          }
+        }
+      },],
     });
 
 
     const sumas = await Bill.all({
       where: { idSeller },
+      include: [{
+        model: Amounts,
+        where: {
+          unPaid: {
+            [Op.gte]: 0 // unPaid > 0
+          },
+          notPayed: {
+            [Op.gte]: 0 // notPayed == 0
+          }
+        }
+      }],
       attributes: [
         [fn('sum', col('amountUSD')), 'sumUSD'],
-        [fn('sum', col('amountBS')), 'sumBS']
+        [fn('sum', col('amountBS')), 'sumBS'],
+        [fn('count', col('*')), 'cuantos']
       ],
 
     });

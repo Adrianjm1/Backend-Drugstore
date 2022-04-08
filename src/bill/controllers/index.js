@@ -3,7 +3,7 @@ const Seller = require('../../seller/domain/model');
 const AmountF = require('../../amounts/domain');
 const PaymentsF = require('../../payments/domain');
 const Amounts = require('../../amounts/domain/model');
-const { Op } = require("sequelize");
+const { Op, fn, col } = require("sequelize");
 var path = require('path');     //used for file paths
 
 
@@ -41,10 +41,38 @@ async function getBillBySeller(req, res) {
     const idSeller = req.params.id;
     const data = await Bill.all({
       where: { idSeller },
+      include: [{
+        model: Amounts,
+        where: {
+          paid: {
+            [Op.lt]: col('amountUSD') // unPaid > 0
+          }
 
+        }
+      },],
+    });
+
+
+    const sumas = await Bill.all({
+      where: { idSeller },
+      include: [{
+        model: Amounts,
+        where: {
+          paid: {
+            [Op.lt]: col('amountUSD') // unPaid > 0
+          }
+        }
+      }],
+      attributes: [
+        [fn('sum', col('amountUSD')), 'sumUSD'],
+        [fn('sum', col('amountBS')), 'sumBS'],
+        [fn('count', col('*')), 'cuantos']
+      ],
 
     });
-    res.send(data)
+
+
+    res.send({data, sumas})
   } catch (e) {
     res.status(400).send({ error: e.message })
   }
@@ -159,8 +187,8 @@ async function correcting(req, res) {
 async function deleteBill(req, res) {
   try {
     const id = req.params.id
-    const dataAmounts = await AmountF.deleteA({where:{idBill: id}})
-    const dataPayments = await PaymentsF.deleteP({where:{idBill: id}})
+    const dataAmounts = await AmountF.deleteA({ where: { idBill: id } })
+    const dataPayments = await PaymentsF.deleteP({ where: { idBill: id } })
     const data = await Bill.deleteB({ where: { id } });
     res.send(`${data} ${dataAmounts} ${dataPayments} Facturas borrada con exito`)
   } catch (e) {
@@ -171,6 +199,28 @@ async function deleteBill(req, res) {
 async function getUnPaid(req, res) {
   try {
     const data = await Bill.all({
+      include: [{
+        model: Amounts,
+        where: {
+          unPaid: {
+            [Op.gt]: 0 // unPaid > 0
+          },
+          notPayed: {
+            [Op.eq]: 0 // notPayed == 0
+          }
+        }
+      },
+      {
+        model: Seller,
+      }],
+    });
+
+    const sumas = await Bill.all({
+
+      attributes: [
+        [fn('sum', col('amountUSD')), 'sumUSD'],
+        [fn('sum', col('amountBS')), 'sumBS']
+      ],
       include: {
         model: Amounts,
         where: {
@@ -182,9 +232,12 @@ async function getUnPaid(req, res) {
           }
         }
       }
+
     });
 
-    res.send(data)
+
+
+    res.send({data, sumas})
   } catch (e) {
     res.status(400).send({ error: e.message })
   }
@@ -194,7 +247,7 @@ async function getUnPaid(req, res) {
 async function getPaid(req, res) {
   try {
     const data = await Bill.all({
-      include: {
+      include: [{
         model: Amounts,
         where: {
           paid: {
@@ -207,7 +260,11 @@ async function getPaid(req, res) {
             [Op.lte]: 0 // // unPaid == 0
           },
         }
+      },{
+        model: Seller,
       }
+    ]
+
     });
 
     let sumUSD = 0;
@@ -235,7 +292,28 @@ async function getPaid(req, res) {
 async function getNotPayed(req, res) {
   try {
     const data = await Bill.all({
-      include: {
+      include: [{
+        model: Amounts,
+        where: {
+          notPayed: {
+            [Op.gt]: 0 // notPayed > 0
+          }
+        },
+      },{
+        model: Seller,
+      }
+    
+    ]
+
+
+    });
+
+    const sumas = await Bill.all({
+
+      attributes: [
+        [fn('sum', col('amountUSD')), 'sumUSD'],
+        [fn('sum', col('amountBS')), 'sumBS']
+      ], include: {
         model: Amounts,
         where: {
           notPayed: {
@@ -243,8 +321,10 @@ async function getNotPayed(req, res) {
           }
         }
       }
+
     });
-    res.send(data)
+
+    res.send({ data, sumas })
   } catch (e) {
     res.status(400).send({ error: e.message })
   }

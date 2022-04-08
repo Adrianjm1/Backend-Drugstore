@@ -288,6 +288,10 @@ async function create(req, res) {
                 } 
                 else{
                    noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                  if (noPagado > 0 && noPagado < 1) {
+                    noPagado = 0;
+                  }
+
                    nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
                    sinPagar = parseFloat(data2[0].notPayed);
                 }

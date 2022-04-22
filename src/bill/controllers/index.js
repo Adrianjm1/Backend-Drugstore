@@ -317,7 +317,7 @@ async function getNotPayed(req, res) {
         model: Amounts,
         where: {
           notPayed: {
-            [Op.gt]: 0 // notPayed > 0
+            [Op.gt]: 0 // notPayed >0
           }
         }
       }

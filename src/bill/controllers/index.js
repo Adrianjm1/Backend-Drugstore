@@ -72,7 +72,7 @@ async function getBillBySeller(req, res) {
     });
 
 
-    res.send({data, sumas})
+    res.send({ data, sumas })
   } catch (e) {
     res.status(400).send({ error: e.message })
   }
@@ -237,7 +237,7 @@ async function getUnPaid(req, res) {
 
 
 
-    res.send({data, sumas})
+    res.send({ data, sumas })
   } catch (e) {
     res.status(400).send({ error: e.message })
   }
@@ -260,10 +260,10 @@ async function getPaid(req, res) {
             [Op.lte]: 0 // // unPaid == 0
           },
         }
-      },{
+      }, {
         model: Seller,
       }
-    ]
+      ]
 
     });
 
@@ -299,11 +299,11 @@ async function getNotPayed(req, res) {
             [Op.gt]: 0 // notPayed > 0
           }
         },
-      },{
+      }, {
         model: Seller,
       }
-    
-    ]
+
+      ]
 
 
     });
@@ -311,8 +311,8 @@ async function getNotPayed(req, res) {
     const sumas = await Bill.all({
 
       attributes: [
-        [fn('sum', col('amountUSD')), 'sumUSD'],
-        [fn('sum', col('amountBS')), 'sumBS']
+        [fn('sum', col('notPayed')), 'sumUSD'],
+        // [fn('sum', col('amountBS')), 'sumBS']
       ], include: {
         model: Amounts,
         where: {

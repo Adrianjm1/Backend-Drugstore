@@ -312,7 +312,7 @@ async function getNotPayed(req, res) {
 
       attributes: [
         [fn('sum', col('notPayed')), 'sumUSD'],
-        // [fn('sum', col('amountBS')), 'sumBS']
+        [fn('sum', col('amountBS')), 'sumBS']
       ], include: {
         model: Amounts,
         where: {

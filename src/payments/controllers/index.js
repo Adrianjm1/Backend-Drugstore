@@ -22,7 +22,7 @@ async function getPaymentsByDay(req, res) {
 
     Payment.all({
       attributes: ['id', 'amountUSD', 'referenceNumber', 'exchangeRate', 'bank', 'date', 'paymentUSD', 'idBill'],
-      include: [{ model: Bill, attributes: ['client', 'rif', 'expirationDate', 'id' ], include:[{model: Seller}] }],
+      include: [{ model: Bill, attributes: ['client', 'rif', 'expirationDate', 'id'], include: [{ model: Seller }] }],
       where: { date: day },
       order: [
         ['id', 'DESC'],
@@ -86,7 +86,7 @@ async function getPaymentsByMonth(req, res) {
 
     Payment.all({
       attributes: ['id', 'amountUSD', 'referenceNumber', 'exchangeRate', 'bank', 'date', 'paymentUSD', 'idBill'],
-      include: [{ model: Bill, attributes: ['client', 'rif', 'expirationDate', 'id' ], include:[{model: Seller}] }],
+      include: [{ model: Bill, attributes: ['client', 'rif', 'expirationDate', 'id'], include: [{ model: Seller }] }],
       order: [
         ['id', 'DESC'],
       ]
@@ -197,19 +197,26 @@ async function create(req, res) {
               attributes: ['id', 'paid', 'unPaid', 'notPayed'],
               where: { idBill: data.id }
             })
-              .then(data2 => {                
+              .then(data2 => {
 
                 let pagado = parseFloat(data2[0].paid) + parseFloat(body.amountUSD);
                 let noPagado = 0;
                 let nuevoSaldo = 0;
                 let sinPagar = 0;
                 if (data2[0].notPayed > 0) {
-                   sinPagar = parseFloat(data2[0].notPayed) - parseFloat(body.amountUSD);
-                } 
-                else{
-                   noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
-                   nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
-                   sinPagar = parseFloat(data2[0].notPayed);
+                  sinPagar = parseFloat(data2[0].notPayed) - parseFloat(body.amountUSD);
+
+                  if (sinPagar > 0 && sinPagar < 1) {
+                    sinPagar = 0;
+                  }
+                }
+                else {
+                  noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                  if (noPagado > 0 && noPagado < 1) {
+                    noPagado = 0;
+                  }
+                  nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+                  sinPagar = parseFloat(data2[0].notPayed);
                 }
                 body.idBill = data.id;
 
@@ -284,16 +291,21 @@ async function create(req, res) {
                 let nuevoSaldo = 0;
                 let sinPagar = 0;
                 if (data2[0].notPayed > 0) {
-                   sinPagar = parseFloat(data2[0].notPayed) - parseFloat(body.amountUSD);
-                } 
-                else{
-                   noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
+                  sinPagar = parseFloat(data2[0].notPayed) - parseFloat(body.amountUSD);
+
+                  if (sinPagar > 0 && sinPagar < 1) {
+                    sinPagar = 0;
+                  }
+
+                }
+                else {
+                  noPagado = parseFloat(data2[0].unPaid) - parseFloat(body.amountUSD);
                   if (noPagado > 0 && noPagado < 1) {
                     noPagado = 0;
                   }
 
-                   nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
-                   sinPagar = parseFloat(data2[0].notPayed);
+                  nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+                  sinPagar = parseFloat(data2[0].notPayed);
                 }
 
 
@@ -312,7 +324,7 @@ async function create(req, res) {
 
                     Promise.all([
                       SellerF.up({ commissionBS: comision }, { where: { id: data.idSeller } }),
-                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado,notPayed: sinPagar }, { where: { idBill: data.id } }),
+                      AmountsFunctions.up({ paid: pagado, unPaid: noPagado, notPayed: sinPagar }, { where: { idBill: data.id } }),
                       BillFunctions.up({ overPaidBS: body.overPaidBS }, { where: { id: data.id } }),
                       Payment.create(body)
                     ])
@@ -413,8 +425,8 @@ async function deletePay(req, res) {
     const id = req.params.id;
 
     const dataPayment = await Payment.single({ where: { id } });
-    const  dataBill = await BillFunctions.single({where: {id: dataPayment.idBill }});
-    const dataAmount = await AmountsFunctions.single({where: {idBill: dataBill.id }}); //IMPORTAR
+    const dataBill = await BillFunctions.single({ where: { id: dataPayment.idBill } });
+    const dataAmount = await AmountsFunctions.single({ where: { idBill: dataBill.id } }); //IMPORTAR
 
 
     // console.log(dataAmount);
@@ -424,18 +436,18 @@ async function deletePay(req, res) {
     if (today > expiration || today.getFullYear() > dataBill.expirationDate.getFullYear()) {
 
 
-            let notPayed = parseFloat(dataAmount.notPayed) +  parseFloat(dataPayment.amountUSD);
-            let paid = dataAmount.paid - dataPayment.amountUSD;
-            AmountsFunctions.up({ notPayed:notPayed, paid: paid }, { where: { idBill: dataBill.id } });
-            console.log(notPayed );
+      let notPayed = parseFloat(dataAmount.notPayed) + parseFloat(dataPayment.amountUSD);
+      let paid = dataAmount.paid - dataPayment.amountUSD;
+      AmountsFunctions.up({ notPayed: notPayed, paid: paid }, { where: { idBill: dataBill.id } });
+      console.log(notPayed);
 
     }
-    else{
+    else {
 
-      let unPaid = parseFloat(dataAmount.unPaid) +  parseFloat(dataPayment.amountUSD);
+      let unPaid = parseFloat(dataAmount.unPaid) + parseFloat(dataPayment.amountUSD);
       let paid = dataAmount.paid - dataPayment.amountUSD;
-      AmountsFunctions.up({ unPaid:unPaid ,  paid: paid }, { where: { idBill: dataBill.id } });
-      console.log(unPaid );
+      AmountsFunctions.up({ unPaid: unPaid, paid: paid }, { where: { idBill: dataBill.id } });
+      console.log(unPaid);
     }
 
 

@@ -44,12 +44,17 @@ async function getBillBySeller(req, res) {
       include: [{
         model: Amounts,
         where: {
-          paid: {
-            [Op.lt]: col('amountUSD') // unPaid > 0
+          [Op.or]: {
+            unPaid:{
+              [Op.gt]: 0 // unPaid > 0
+            },
+            notPayed:{
+              [Op.gt]: 0
+            },
+     
           }
-
-        }
-      },],
+        },
+      }]
     });
 
 
@@ -58,10 +63,16 @@ async function getBillBySeller(req, res) {
       include: [{
         model: Amounts,
         where: {
-          paid: {
-            [Op.lt]: col('amountUSD') // unPaid > 0
+          [Op.or]: {
+            unPaid:{
+              [Op.gt]: 0 // unPaid > 0
+            },
+            notPayed:{
+              [Op.gt]: 0
+            },
+     
           }
-        }
+        },
       }],
       attributes: [
         [fn('sum', col('amountUSD')), 'sumUSD'],
@@ -72,7 +83,7 @@ async function getBillBySeller(req, res) {
     });
 
 
-    res.send({data, sumas})
+    res.send({ data, sumas })
   } catch (e) {
     res.status(400).send({ error: e.message })
   }
@@ -237,7 +248,7 @@ async function getUnPaid(req, res) {
 
 
 
-    res.send({data, sumas})
+    res.send({ data, sumas })
   } catch (e) {
     res.status(400).send({ error: e.message })
   }
@@ -260,10 +271,10 @@ async function getPaid(req, res) {
             [Op.lte]: 0 // // unPaid == 0
           },
         }
-      },{
+      }, {
         model: Seller,
       }
-    ]
+      ]
 
     });
 
@@ -299,11 +310,11 @@ async function getNotPayed(req, res) {
             [Op.gt]: 0 // notPayed > 0
           }
         },
-      },{
+      }, {
         model: Seller,
       }
-    
-    ]
+
+      ]
 
 
     });
@@ -311,13 +322,13 @@ async function getNotPayed(req, res) {
     const sumas = await Bill.all({
 
       attributes: [
-        [fn('sum', col('amountUSD')), 'sumUSD'],
+        [fn('sum', col('notPayed')), 'sumUSD'],
         [fn('sum', col('amountBS')), 'sumBS']
       ], include: {
         model: Amounts,
         where: {
           notPayed: {
-            [Op.gt]: 0 // notPayed > 0
+            [Op.gt]: 0 // notPayed >0
           }
         }
       }

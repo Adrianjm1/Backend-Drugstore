@@ -44,9 +44,12 @@ async function getBillBySeller(req, res) {
       include: [{
         model: Amounts,
         where: {
-          paid: {
-            [Op.lt]: col('amountUSD') // unPaid > 0
-          }
+          unPaid: {
+            [Op.gt]: 0 // unPaid > 0
+          },
+          notPayed: {
+            [Op.gt]: 0
+          },
 
         }
       },],
@@ -58,9 +61,12 @@ async function getBillBySeller(req, res) {
       include: [{
         model: Amounts,
         where: {
-          paid: {
-            [Op.lt]: col('amountUSD') // unPaid > 0
-          }
+          unPaid: {
+            [Op.gt]: 0 // unPaid > 0
+          },
+          notPayed: {
+            [Op.gt]: 0
+          },
         }
       }],
       attributes: [

@@ -51,8 +51,10 @@ async function getBillBySeller(req, res) {
             notPayed: {
               [Op.gt]: 0
             }
-        }
-      },],
+
+          }
+        },
+      }]
     });
 
 
@@ -68,6 +70,7 @@ async function getBillBySeller(req, res) {
             notPayed: {
               [Op.gt]: 0
             }
+          }
         }
       }],
       attributes: [

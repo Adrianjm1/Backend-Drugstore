@@ -216,6 +216,7 @@ async function create(req, res) {
                     noPagado = 0;
                   }
                   nuevoSaldo = parseFloat(data.amountUSD) - parseFloat(body.amountUSD);
+
                   sinPagar = parseFloat(data2[0].notPayed);
                 }
                 body.idBill = data.id;
